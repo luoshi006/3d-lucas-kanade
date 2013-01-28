@@ -5,12 +5,11 @@ function dW_dp = jacobian_3d_a(nx, ny, nz);
 % Iain Matthews, Simon Baker, Carnegie Mellon University, Pittsburgh
 % $Id: jacobian_a.m,v 1.1.1.1 2003/08/20 03:07:36 iainm Exp $
 
-% TODO: How do i arrange these?
-jac_x = kron((0:nx - 1), ones(ny, 1));
-jac_y = kron((0:ny - 1)', ones(1, nx));
-jac_z = kron((0:nz - 1)', ones(1, nx));
-jac_zero = zeros(ny, nx);
-jac_one = ones(ny, nx);
+jac_x = repmat(kron((0:nx - 1), ones(ny, 1)), [1 1 nz]);
+jac_y = repmat(kron((0:ny - 1)', ones(1, nx)), [1 1 nz]);
+jac_z = repmat(permute(kron(0:nz-1, ones(ny, 1)), [1 3 2]), [1 nx 1]);
+jac_zero = zeros(ny, nx, nz);
+jac_one = ones(ny, nx, nz);
 
 % [ 0  z -y 1 0 0 
 %  -z  0  x 0 1 0
