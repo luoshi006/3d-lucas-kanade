@@ -1,4 +1,4 @@
-function [img, warp_p, tmplt_pts, w, h, d, verb_info] = init_3d_a(tmplt, img, p_init)
+function [img, warp_p, tmplt_pts, w, h, d, verb_info] = init_3d_a(tmplt, img, p_init, verbose)
 % init_a.m
 % Common initialisation things for all affine algorithms
 

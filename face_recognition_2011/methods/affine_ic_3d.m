@@ -25,7 +25,7 @@ if nargin<4
 end
 
 % Common initialisation
-[img, warp_p, tmplt_pts, w, h, d, verb_info] = init_3d_a(tmplt, img, p_init);
+[img, warp_p, tmplt_pts, w, h, d, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Pre-computable things ---------------------------------------------------
 % TODO: do this in 3D
