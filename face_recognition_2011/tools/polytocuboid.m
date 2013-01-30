@@ -17,7 +17,7 @@ function wimg = polytocuboid(img, dst, M)
 if nargin<3 error('Invalid args'); end
 
 % Dimensions of destination image - integers, assume cuboid
-maxv = max(dst);
+maxv = max(dst');
 
 % Get all points in destination to sample
 [xg, yg, zg] = meshgrid(1:maxv(1), 1:maxv(2), 1:maxv(3));
@@ -34,7 +34,7 @@ uv = uv(1:3,:)';
 
 % Sample
 wimg = interp3(img, uv(:,1), uv(:,2), uv(:,3));
-wimg = reshape(wimg, [maxv(1) maxv(2) maxv(2)]);
+wimg = reshape(wimg, [maxv(1) maxv(2) maxv(3)]);
 
 % Check for NaN background pixels - replace them with a background of 0
 idx = find(isnan(wimg));
