@@ -34,7 +34,7 @@ tmplt_pts = [
              1 h d;
              w h d;
              w 1 d;
-            ];
+            ]';
 
 % Verbose display of fitting?
 if verbose
