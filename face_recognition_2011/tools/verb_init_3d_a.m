@@ -17,7 +17,7 @@ set(gcf, 'DoubleBuffer', 'on');
 colormap(gray(256));
 
 % Input image
-subplot(2,2,1);
+subplot(1,2,1);
 patch(isosurface(img,0.99));
 axis('square');
 title('Image');
@@ -27,14 +27,14 @@ warp_M = build_3d_warp_a(warp_p);
 warp_pts = warp_M * [tmplt_pts; ones(1, size(tmplt_pts, 2))];
 
 hold on
-verb.lh = plot3([warp_pts(1,:)], ...
-                [warp_pts(2,:)], ...
-                [warp_pts(3,:)], ...
+verb.lh = plot3(warp_pts(1, :), ...
+                warp_pts(2, :), ...
+                warp_pts(3, :), ...
                 'linewidth', 2);
 hold off
 
 % Template image
-subplot(2,2,2);
+subplot(1,2,2);
 patch(isosurface(tmplt, 0.99));
 axis('square');
 title('Template');

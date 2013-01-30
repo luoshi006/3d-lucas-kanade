@@ -61,7 +61,7 @@ for f=1:n_iters
 	
 	% -- Show fitting? --
 	if verbose
-        verb_plot_3d_a(verb_info, warp_p, tmplt_pts, error_img);
+        verb_plot_3d_a(verb_info, warp_p, tmplt_pts);
 	end
 	
 	% -- Really iteration 1 is the zeroth, ignore final computation --
