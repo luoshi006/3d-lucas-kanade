@@ -1,4 +1,4 @@
-function fitt = affine_ic_3d(img, tmplt, ~, n_iters, verbose, ~)
+function fitt = affine_ic_3d(img, tmplt, p_init, n_iters, verbose, ~)
 % AFFINE_IC - Affine image alignment using inverse-compositional algorithm
 %   FIT = AFFINE_IC(IMG, TMPLT, P_INIT, N_ITERS, VERBOSE)
 %   Align the template image TMPLT to an example image IMG using an
@@ -28,9 +28,10 @@ end
 [img, warp_p, tmplt_pts, w, h, d, verb_info] = init_3d_a(tmplt, img, p_init);
 
 % Pre-computable things ---------------------------------------------------
-H  = fspecial('gaussian', [5 5], 2.0);
-img = imfilter(img, H, 'replicate'); 
-tmplt = imfilter(tmplt, H, 'replicate');
+% TODO: do this in 3D
+%H  = fspecial('gaussian', [5 5], 2.0);
+%img = imfilter(img, H, 'replicate'); 
+%tmplt = imfilter(tmplt, H, 'replicate');
 
 % 3) Evaluate gradient of T
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(tmplt);
@@ -39,7 +40,7 @@ tmplt = imfilter(tmplt, H, 'replicate');
 dW_dp = jacobian_3d_a(w, h, d);
 
 % 5) Compute steepest descent images, VT_dW_dp
-VT_dW_dp = sd_images_3d(dW_dp, nabla_Tx, nabla_Ty, N_p, h, w);
+VT_dW_dp = sd_images_3d(dW_dp, nabla_Tx, nabla_Ty, nabla_Tz, N_p, w, h, d);
 	
 % 6) Compute Hessian and inverse
 H = hessian_3d(VT_dW_dp, N_p, w);
@@ -60,7 +61,7 @@ for f=1:n_iters
 	
 	% -- Show fitting? --
 	if verbose
-		verb_plot_a(verb_info, warp_p, tmplt_pts, error_img);
+        verb_init_3d_a(verb_info, warp_p, tmplt_pts, error_img);
 	end
 	
 	% -- Really iteration 1 is the zeroth, ignore final computation --
@@ -78,28 +79,28 @@ for f=1:n_iters
 	warp_p = update_step_3d(warp_p, delta_p);
 end
 
-% TODO: fix this
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function warp_p = update_step_3d(warp_p, delta_p)
 % Compute and apply the update
 
-delta_p = reshape(delta_p, 2, 3);
-	
-% Convert affine notation into usual Matrix form - NB transposed
-delta_M = [delta_p; 0 0 1];	
-delta_M(1,1) = delta_M(1,1) + 1;
-delta_M(2,2) = delta_M(2,2) + 1;
+delta_M = [1         -delta_p(1) delta_p(2)  delta_p(3); ...
+           delta_p(4) 1          delta_p(5) -delta_p(6); ...
+          -delta_p(7) delta_p(8) 1           delta_p(9); ...
+           0          0          0           1];
 
 % Invert compositional warp
 delta_M = inv(delta_M);
 
 % Current warp
-warp_M = [warp_p; 0 0 1];	
-warp_M(1,1) = warp_M(1,1) + 1;
-warp_M(2,2) = warp_M(2,2) + 1;
+warp_M = [1         -warp_p(1) warp_p(2)  warp_p(3); ...
+          warp_p(4)  1         warp_p(5) -warp_p(6); ...
+         -warp_p(7)  warp_p(8) 1          warp_p(9); ...
+          0          0         0          1];
 
 % Compose
-comp_M = warp_M * delta_M;	
-warp_p = comp_M(1:2,:);
-warp_p(1,1) = warp_p(1,1) - 1;
-warp_p(2,2) = warp_p(2,2) - 1;
+comp_M = warp_M * delta_M;
+
+% Set diagonal to 0
+warp_p = [comp_M(1,2), warp_p(1,3), comp_M(1,4), ...
+          comp_M(2,1), comp_M(2,3), comp_M(2,4) ...
+          comp_M(3,1), comp_M(3,2), comp_M(3,4)];
