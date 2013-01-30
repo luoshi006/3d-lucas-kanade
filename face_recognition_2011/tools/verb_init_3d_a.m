@@ -7,8 +7,6 @@ function verb = verb_init_3d_a(img, tmplt, tmplt_pts, warp_p)
 
 % Modified by by G. Tzimiropoulos, S. Zafeiriou and M. Pantic 
 
-% TODO: fix this
-
 if nargin<4 error('Not enough input arguments'); end
 
 % Init figure
