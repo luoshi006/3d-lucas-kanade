@@ -1,4 +1,4 @@
-function [img, warp_p, tmplt_pts, w, h, d, verb_info] = init_3d_a(tmplt, img, p_init, verbose)
+function [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose)
 % init_a.m
 % Common initialisation things for all affine algorithms
 
@@ -25,16 +25,7 @@ h = size(tmplt, 2);
 d = size(tmplt, 3);
 
 % Template verticies, cube           
-tmplt_pts = [
-             1 1 1;
-             1 h 1;
-             w h 1;
-             w 1 1;
-             1 1 d;
-             1 h d;
-             w h d;
-             w 1 d;
-            ]';
+tmplt_pts = build_cube(w, h, d);
 
 % Verbose display of fitting?
 if verbose
