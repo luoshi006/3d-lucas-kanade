@@ -61,7 +61,7 @@ for f=1:n_iters
 	
 	% -- Show fitting? --
 	if verbose
-        verb_init_3d_a(verb_info, warp_p, tmplt_pts, error_img);
+        verb_plot_3d_a(verb_info, warp_p, tmplt_pts, error_img);
 	end
 	
 	% -- Really iteration 1 is the zeroth, ignore final computation --
@@ -83,24 +83,17 @@ end
 function warp_p = update_step_3d(warp_p, delta_p)
 % Compute and apply the update
 
-delta_M = [1         -delta_p(1) delta_p(2)  delta_p(3); ...
-           delta_p(4) 1          delta_p(5) -delta_p(6); ...
-          -delta_p(7) delta_p(8) 1           delta_p(9); ...
-           0          0          0           1];
+delta_M = build_3d_warp_a(delta_p);
 
 % Invert compositional warp
 delta_M = inv(delta_M);
 
 % Current warp
-warp_M = [1         -warp_p(1) warp_p(2)  warp_p(3); ...
-          warp_p(4)  1         warp_p(5) -warp_p(6); ...
-         -warp_p(7)  warp_p(8) 1          warp_p(9); ...
-          0          0         0          1];
+warp_M = build_3d_warp_a(warp_p);
 
 % Compose
 comp_M = warp_M * delta_M;
 
-% Get new parameters - do we need to negate them again?
-warp_p = [comp_M(1,2), warp_p(1,3), comp_M(1,4), ...
-          comp_M(2,1), comp_M(2,3), comp_M(2,4) ...
-          comp_M(3,1), comp_M(3,2), comp_M(3,4)];
+% Get new parameters - [vx, vy, vz, tx, ty, tz]
+warp_p = [comp_M(3,2), comp_M(1,3), comp_M(2,1), ...
+          comp_M(1,4), comp_M(2,4), comp_M(3,4)];

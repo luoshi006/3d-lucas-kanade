@@ -18,31 +18,29 @@ colormap(gray(256));
 
 % Input image
 subplot(2,2,1);
-image(img);
+patch(isosurface(img,0.99));
 axis('image');
 title('Image');
 axis off
 
 
-M = [warp_p; 0 0 1];
-M(1,1) = M(1,1) + 1;
-M(2,2) = M(2,2) + 1;
-warp_pts = M * [tmplt_pts; ones(1, size(tmplt_pts,2))];
+warp_M = build_3d_warp_a(warp_p);
+warp_pts = warp_M * [tmplt_pts; ones(1, size(tmplt_pts, 2))];
 
 hold on
-verb.lh = plot([warp_pts(1,:) warp_pts(1,1)], [warp_pts(2,:) warp_pts(2,1)], 'linewidth', 2);
+verb.lh = plot3([warp_pts(1,:) warp_pts(1,1)], [warp_pts(2,:) warp_pts(2,1)], [warp_pts(3,:) warp_pts(3,1)], 'linewidth', 2);
 hold off
 
 % Template image
 subplot(2,2,2);
-image(tmplt); 
+patch(isosurface(tmplt, 0.99));
 axis('image');
 title('Template');
 axis off
 
 % Error image
 subplot(2,2,4);
-verb.ih_error = image(zeros(size(tmplt)));
+verb.ih_error = patch(isosurface(tmplt, 0.99));
 axis('image');
 title('Error');
 axis off
