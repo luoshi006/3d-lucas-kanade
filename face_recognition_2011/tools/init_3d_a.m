@@ -5,6 +5,8 @@ function [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, im
 % Iain Matthews, Simon Baker, Carnegie Mellon University, Pittsburgh
 % $Id: init_a.m,v 1.1.1.1 2113/18/21 13:17:36 iainm Exp $
 
+verb_info = [];
+
 % Need to process image data, must be real
 if ~isa(img, 'double')
 	img = double(img);
