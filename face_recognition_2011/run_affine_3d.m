@@ -11,13 +11,13 @@ function run_affine_3d(data_name)
 if nargin<1 error('Not enough input arguments'); end
 
 % List of algorithms to run
-alg_list = {'affine_ic_3d'};
+alg_list = {'affine_ic_irls_3d'};
 
 % Test parameters
-verbose = 0;					% Show fitting?
+verbose = 1;					% Show fitting?
 n_iters = 15;					% Number of gradient descent iterations
 n_tests = 1;					% Number of convergence tests
-n_freq_tests = 1;				% Number of frequency of convergence tests
+n_freq_tests = 100;				% Number of frequency of convergence tests
 max_spatial_error = 1;			% Max location error for deciding convergence
 
 img_pix_sig = [0 4 8 16 32];	% Noise power sigmas for image

@@ -8,9 +8,8 @@ function weight = robust_error (error_img, perc_out)
 % Ralph Gross
 % Carnegie Mellon University, Pittsburgh
 
-[val,ind]      = sort(abs(error_img(:)));
-selInd         = ind(1:round((1-perc_out)*length(ind)));
-%selInd         = ind(1:((1-perc_out)*length(ind)));
+[~,ind]        = sort(abs(error_img(:)));
+selInd         = ind(1:round((1 - perc_out) * length(ind)));
 weight         = zeros(size(error_img));
 weight(selInd) = 1;
 weight         = reshape(weight,[size(error_img,1) size(error_img,2)]);

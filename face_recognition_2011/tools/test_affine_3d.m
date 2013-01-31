@@ -49,9 +49,9 @@ target_affine = [minX                             minY minZ; % Bottom Triangle
 				 minX + ((maxX - minX) / 2) - 0.5 maxY maxZ]';
 
 % Template image dimensions
-template_nx = maxX - minX + 1;
-template_ny = maxY - minY + 1;
-template_nz = maxZ - minZ + 1;
+template_nx = maxX - minX;
+template_ny = maxY - minY;
+template_nz = maxZ - minZ;
 
 % Template corner points (unperturbed, rectangle)
 template_pts = [1           1           1;           % Bottom Rectangle
