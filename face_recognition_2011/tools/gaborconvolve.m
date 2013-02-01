@@ -105,7 +105,7 @@ function [EO, BP, S] = gaborconvolve(im, nscale, norient, minWaveLength, mult, .
     if ~exist('feedback','var'), feedback = 0;  end    
     if ~isa(im,'double'),  im = double(im);  end
     
-    [rows cols] = size(im);					
+    [rows, cols] = size(im);					
     imagefft = fft2(im);                 % Fourier transform of image
     EO = cell(nscale, norient);          % Pre-allocate cell array
     BP = cell(nscale,1);
@@ -201,18 +201,7 @@ function [EO, BP, S] = gaborconvolve(im, nscale, norient, minWaveLength, mult, .
         dtheta = min(dtheta*norient/2,pi);
         % The spread function is cos(dtheta) between -pi and pi.  We add 1,
         % and then divide by 2 so that the value ranges 0-1
-        spread = (cos(dtheta)+1)/2;        
-
-
-%        dThetaOnSigma = 1.2;
-%        thetaSigma = pi/norient/dThetaOnSigma;  % Calculate the standard deviation of the
-                                                % angular Gaussian function used to
-                                                % construct filters in the freq. plane.
-
-%        spread = exp((-dtheta.^2) / (2 * thetaSigma^2));  % Calculate the
-                                                       % angular filter component.        
-        
-        
+        spread = (cos(dtheta)+1)/2;                  
         
         for s = 1:nscale,                    % For each scale.
             filter = logGabor{s} .* spread;  % Multiply by the angular spread to get the filter

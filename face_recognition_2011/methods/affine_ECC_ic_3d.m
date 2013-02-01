@@ -28,8 +28,8 @@ function fitt  = affine_ECC_ic_3d(img, tmplt, p_init, n_iters, verbose)
 % $ Version: 1.0, 03/01/2012 $
 
 
-if nargin<4 verbose = 0; end
-if nargin<3 error('Not enough input arguments'); end
+if nargin<5 verbose = 0; end
+if nargin<4 error('Not enough input arguments'); end
 
 % Common initialisation
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
