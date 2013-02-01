@@ -9,9 +9,9 @@ if nargin<3 error('Not enough input arguments'); end
 
 H = zeros(N_p, N_p);
 for i=1:N_p
-	h1 = VI_dW_dp(:,((i-1)*w)+1:((i-1)*w)+w, :);
+	h1 = VI_dW_dp(:, ((i - 1) * w) + 1:((i - 1) * w) + w, :);
 	for j=1:N_p
-		h2 = VI_dW_dp(:,((j-1)*w)+1:((j-1)*w)+w, :);
+		h2 = VI_dW_dp(:, ((j - 1) * w) + 1:((j - 1) * w) + w, :);
 		H(j, i) = sum(sum(sum((h1 .* h2))));
 	end
 end

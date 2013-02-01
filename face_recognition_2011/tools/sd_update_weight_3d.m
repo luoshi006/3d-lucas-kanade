@@ -9,6 +9,6 @@ if nargin<5 error('Not enough input arguments'); end
 
 sd_delta_p = zeros(N_p, 1);
 for p=1:N_p
-  h1 = VI_dW_dp(:, ((p - 1) * w) + 1:((p - 1) * w) + w, :);
-  sd_delta_p(p) = sum(sum(sum(weight .* (h1 .* error_img))));
+	h1 = VI_dW_dp(:, ((p - 1) * w) + 1:((p - 1) * w) + w, :);
+	sd_delta_p(p) = sum(sum(sum(weight .* (h1 .* conj(error_img)))));
 end
