@@ -57,7 +57,7 @@ for f=1:n_iters
 	
 	% -- Save current fit parameters --
 	fitt(f).warp_p = warp_p;
-	fitt(f).rms_error = sqrt(mean(error_img(:) .^2));
+	fitt(f).rms_error = sqrt(mean(error_img(:) .^ 2));
 	
 	% -- Show fitting? --
 	if verbose
