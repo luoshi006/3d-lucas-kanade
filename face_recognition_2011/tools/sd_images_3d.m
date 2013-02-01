@@ -9,7 +9,7 @@ if nargin<6 error('Not enough input arguments'); end
 
 VI_dW_dp = zeros(h, w * N_p, d);
 for p=1:N_p		
-    cols = ((p-1)*w)+1:((p-1)*w)+w;
+    cols = ((p - 1) * w) + 1:((p - 1) * w) + w;
 	Tx = nabla_Ix .* dW_dp(1:h, cols, :);
 	Ty = nabla_Iy .* dW_dp(h+1:h+h, cols, :);
     Tz = nabla_Iz .* dW_dp(h+h+1:end, cols, :);

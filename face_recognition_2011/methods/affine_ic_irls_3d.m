@@ -1,4 +1,4 @@
-function fitt = affine_ic_irls(img, tmplt, p_init, n_iters, verbose, var)
+function fitt = affine_ic_irls_3d(img, tmplt, p_init, n_iters, verbose, var)
 % AFFINE_IC_IRLS - Affine image alignment using inverse-compositional 
 % iteratively reweighted least squares algorithm
 %   FIT = AFFINE_IC_IRLS(IMG, TMPLT, P_INIT, N_ITERS, VAR, VERBOSE)

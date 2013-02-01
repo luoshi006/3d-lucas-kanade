@@ -12,6 +12,5 @@ function weight = robust_error_3d(error_img, perc_out)
 selInd         = ind(1:round((1 - perc_out) * length(ind)));
 weight         = zeros(size(error_img));
 weight(selInd) = 1;
-weight         = reshape(weight, [size(error_img, 1) size(error_img, 2) size(error_img, 3)]);
 
 
