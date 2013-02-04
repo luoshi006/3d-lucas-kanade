@@ -22,6 +22,7 @@ title('Image');
 axis off
 
 warp_M = build_3d_warp_a(warp_p);
+
 warp_pts = warp_M * [tmplt_pts; ones(1, size(tmplt_pts, 2))];
 
 hold on

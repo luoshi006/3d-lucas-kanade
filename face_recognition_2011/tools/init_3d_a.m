@@ -13,7 +13,7 @@ if ~isa(img, 'double')
 end
 
 % 3D Affine warp (skew matrix, translation)
-N_p = 6;
+N_p = 12;
 if numel(p_init) ~= N_p
 	error('Number of warp parameters incorrect');
 end

@@ -40,13 +40,11 @@ target_pts = [minX minY minZ; % Bottom rectangle
               maxX maxY maxZ;
               maxX minY maxZ]';
 
-% Target affine warp control points - triangle on the rectangle
-target_affine = [minX                             minY minZ; % Bottom Triangle
-                 maxX                             minY minZ;
-				 minX + ((maxX - minX) / 2) - 0.5 maxY minZ;
-                 minX                             minY maxZ; % Top Triangle
-                 maxX                             minY maxZ;
-				 minX + ((maxX - minX) / 2) - 0.5 maxY maxZ]';
+% Target affine warp control points - tetrahedron
+target_affine = [minX minY minZ;                                                           % Bottom triangle
+                 maxX minY minZ;
+                 minX + ((maxX - minX) / 2) - 0.5 maxY minZ;
+                 minX + ((maxX - minX) / 2) - 0.5 minY + ((maxY - minY) / 2) - 0.5 maxZ]'; % Tip of tetrahedron
 
 % Template image dimensions
 template_nx = maxX - minX;
@@ -64,23 +62,21 @@ template_pts = [1           1           1;           % Bottom Rectangle
 				template_nx 1           template_nz]';
 
 % Template affine warp control points
-template_affine = [1               1           1;           % Bottom Triangle
-				   template_nx     1           1;
-				   template_nx / 2 template_ny 1;
-                   1               1           template_nz; % Top Triangle
-				   template_nx     1           template_nz;
-				   template_nx / 2 template_ny template_nz]';
+template_affine = [1               1               1;             % Bottom Triangle
+				   template_nx     1               1;
+				   template_nx / 2 template_ny     1;
+                   template_nx / 2 template_ny / 2 template_nz]'; % Tip of Tetrahedron Triangle
 
 % Initial warp parameters. Unperturbed translation
-p_init = zeros(1, 6);
-p_init(4:6) = [minX - 1 minY - 1 minZ - 1];
+p_init = zeros(3, 4);
+p_init(:, 4) = [minX - 1; minY - 1; minZ - 1];
 
 % Translate by 0.5 pixels to avoid identity warp. Warping introduces a little
 % smoothing and this avoids the case where the first iteration for a forwards
 % algorithm is on the "unsmoothed" unwarped image
-p_init(4) = p_init(4) + 0.5;
-p_init(5) = p_init(5) + 0.5;
-p_init(6) = p_init(6) + 0.5;
+p_init(1, 4) = p_init(1, 4) + 0.5;
+p_init(2, 4) = p_init(2, 4) + 0.5;
+p_init(3, 4) = p_init(3, 4) + 0.5;
 
 % Scale point offsets to have required sigma
 pt_offsets = pt_offsets * spatial_sigma;
@@ -120,7 +116,7 @@ while go
 	end 
 	
 	% Test points: apply current point offset to target points
-	test_pts = target_affine + reshape(pt_offsets(offset_idx,:), 3, 6);
+	test_pts = target_affine + reshape(pt_offsets(offset_idx,:), 3, 4);
 		
 	% Solve for affine warp
 	M = [template_affine; ones(1,size(template_affine,2))]' \ [test_pts; ones(1,size(test_pts,2))]';
@@ -251,13 +247,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function rms_pt_error = ComputePointError(test_pts, template_affine, warp_p)
 % Compute affine points rms error
-
 % Affine for this iteration
 M = build_3d_warp_a(warp_p);
-
 % Affine points
 iteration_pts = M * [template_affine; ones(1, size(template_affine, 2))];
-
 % Error in affine points
 diff_pts = test_pts - iteration_pts(1:3,:);
 rms_pt_error = sqrt(mean(diff_pts(:) .^ 2));

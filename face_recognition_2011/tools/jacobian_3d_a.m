@@ -9,11 +9,8 @@ function dW_dp = jacobian_3d_a(nx, ny, nz)
 jac_zero = zeros(ny, nx, nz);
 jac_one = ones(ny, nx, nz);
 
-% [ 0  z -y 1 0 0 
-%  -z  0  x 0 1 0
-%   y -x  0 0 0 1 ]
 dW_dp = [
-         jac_zero, jac_z, -jac_y, jac_one, jac_zero, jac_zero;
-        -jac_z, jac_zero, jac_x, jac_zero, jac_one, jac_zero;
-         jac_y, -jac_x, jac_zero, jac_zero, jac_zero, jac_one;
+         jac_x,    jac_y,    jac_z,    jac_one,  jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero;
+         jac_zero, jac_zero, jac_zero, jac_zero, jac_x,    jac_y,    jac_z,    jac_one,  jac_zero, jac_zero, jac_zero, jac_zero;
+         jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_x,    jac_y,    jac_z,    jac_one;
         ];

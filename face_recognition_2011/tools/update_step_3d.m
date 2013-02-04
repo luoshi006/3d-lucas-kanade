@@ -13,5 +13,7 @@ warp_M = build_3d_warp_a(warp_p);
 comp_M = warp_M * delta_M;
 
 % Get new parameters - [vx, vy, vz, tx, ty, tz]
-warp_p = [comp_M(3,2), comp_M(1,3), comp_M(2,1), ...
-          comp_M(1,4), comp_M(2,4), comp_M(3,4)];
+warp_p = comp_M(1:3, :);
+warp_p(1, 1) = warp_p(1, 1) - 1;
+warp_p(2, 2) = warp_p(2, 2) - 1;
+warp_p(3, 3) = warp_p(3, 3) - 1;
