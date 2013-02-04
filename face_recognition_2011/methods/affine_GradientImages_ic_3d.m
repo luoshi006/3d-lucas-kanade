@@ -44,7 +44,7 @@ if nargin<4 error('Not enough input arguments'); end
 [nabla_Txx, nabla_Txy, nabla_Txz] = gradient(gx);
 [nabla_Tyx, nabla_Tyy, nabla_Tyz] = gradient(gy);
 [nabla_Tzx, nabla_Tzy, nabla_Tzz] = gradient(gz);
-% TODO: Really unsure about why this happens???
+% Approximates fully differentiable gradients
 nabla_Tyx = nabla_Txy;
 nabla_Tyz = nabla_Tzy;
 nabla_Txz = nabla_Tzx;
