@@ -146,6 +146,7 @@ while go
 	
 	% Run each algorithm
 	for l=1:length(alg_list)
+        fitp = [];
 		string = ['tic; fitp = ', alg_list{l}, '(noisy_img, tmplt_img, p_init, n_iters, verbose); t = toc;'];
 		eval(string);
 		
@@ -159,7 +160,6 @@ while go
 		% Only need final spatial rms for divergence tests. Don't need fitting results
 		else
 			rms_pt_error = ComputePointError(test_pts, template_affine, fitp(end).warp_p);
-			fitp = [];
 		end	
 		
 		% Save spatial errors
@@ -201,7 +201,14 @@ while go
 			n_converge = getfield(results, {1}, alg_list{l}, {1}, 'n_converge');
 			n_converge = n_converge + 1;
 			results = setfield(results, {1}, alg_list{l}, {1}, 'n_converge', n_converge);
-		end
+        end
+        
+%        % Display error
+%         clf;
+%         error_img = abs(tmplt_img - warp_3d_a(noisy_img, fitp(end).warp_p, template_pts));
+%         error_img(error_img == 0) = NaN;
+%         PATCH_3Darray(error_img, 'col', 'barS');
+%         view([-12 8]);
 		
 		disp(string);
 	end
@@ -253,5 +260,4 @@ iteration_pts = M * [template_affine; ones(1, size(template_affine, 2))];
 
 % Error in affine points
 diff_pts = test_pts - iteration_pts(1:3,:);
-diff_pts = diff_pts(:);
-rms_pt_error = sqrt(mean(diff_pts .^ 2));
+rms_pt_error = sqrt(mean(diff_pts(:) .^ 2));
