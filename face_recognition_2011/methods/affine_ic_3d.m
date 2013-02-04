@@ -28,10 +28,9 @@ end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Pre-computable things ---------------------------------------------------
-% TODO: do this in 3D
-%H  = fspecial('gaussian', [5 5], 2.0);
-%img = imfilter(img, H, 'replicate'); 
-%tmplt = imfilter(tmplt, H, 'replicate');
+% Filter with Gaussian kernel
+img = smooth_img(img);
+tmplt = smooth_img(tmplt);
 
 % 3) Evaluate gradient of T
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(tmplt);

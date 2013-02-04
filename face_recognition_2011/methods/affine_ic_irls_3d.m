@@ -32,10 +32,9 @@ if nargin<4 error('Not enough input arguments'); end
 
 % Pre-computable things ---------------------------------------------------
 var.perc_out = 0.4;
-% TODO: smoothing in 3D
-%H  = fspecial('gaussian', [5 5], 2.0); 
-%img = imfilter(img, H, 'replicate');
-%tmplt = imfilter(tmplt, H, 'replicate');
+% Filter with Gaussian kernel
+img = smooth_img(img);
+tmplt = smooth_img(tmplt);
 
 % 3) Evaluate gradient of T
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(tmplt);

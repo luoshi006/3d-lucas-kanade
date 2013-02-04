@@ -34,10 +34,9 @@ if nargin<4 error('Not enough input arguments'); end
 % Common initialisation
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
-% TODO: Do in 3D
-% H  = fspecial('gaussian', [5 5], 2.0); 
-% img = imfilter(img, H, 'replicate');
-% tmplt = imfilter(tmplt, H, 'replicate');
+% Filter with Gaussian kernel
+img = smooth_img(img);
+tmplt = smooth_img(tmplt);
 
 tmplt   = tmplt - mean(tmplt(:));
 n_tmplt = norm(tmplt(:));
