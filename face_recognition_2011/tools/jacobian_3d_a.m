@@ -10,7 +10,7 @@ jac_zero = zeros(ny, nx, nz);
 jac_one = ones(ny, nx, nz);
 
 dW_dp = [
-         jac_x,    jac_y,    jac_z,    jac_one,  jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero;
-         jac_zero, jac_zero, jac_zero, jac_zero, jac_x,    jac_y,    jac_z,    jac_one,  jac_zero, jac_zero, jac_zero, jac_zero;
-         jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_zero, jac_x,    jac_y,    jac_z,    jac_one;
+         jac_x,    jac_zero, jac_zero, jac_y,    jac_zero, jac_zero, jac_z,    jac_zero, jac_zero, jac_one,  jac_zero, jac_zero;
+         jac_zero, jac_x,    jac_zero, jac_zero, jac_y,    jac_zero, jac_zero, jac_z,    jac_zero, jac_zero, jac_one,  jac_zero
+         jac_zero, jac_zero, jac_x,    jac_zero, jac_zero, jac_y,    jac_zero, jac_zero, jac_z,    jac_zero, jac_zero, jac_one;
         ];
