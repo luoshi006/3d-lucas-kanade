@@ -1,4 +1,4 @@
-function G = image_jacobian_3d(gx, gy, gz, dW_dp, N_p)
+function sd = image_jacobian_3d(gx, gy, gz, dW_dp, N_p)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %G = IMAGE_JACOBIAN(GX, GY, J, NOP)
 % This function computes the jacobian G of warped image wrt parameters. 
@@ -34,4 +34,9 @@ Tx = gx .* dW_dp(1:h, :, :);
 Ty = gy .* dW_dp(h+1:h+h, :, :);
 Tz = gz .* dW_dp(h+h+1:end, :, :);
 G = Tx + Ty + Tz;
-G = reshape(G, h * w * d, N_p);
+
+sd = zeros(w * h * d, N_p);
+for p=1:N_p
+    cols = ((p - 1) * w) + 1:((p - 1) * w) + w;
+    sd(:, p) = reshape(G(:, cols, :), [w * h * d, 1]);
+end
