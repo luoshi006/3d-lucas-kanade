@@ -4,7 +4,7 @@ function fitt = affine_ic_irls_3d(img, tmplt, p_init, n_iters, verbose, var)
 %   FIT = AFFINE_IC_IRLS(IMG, TMPLT, P_INIT, N_ITERS, VAR, VERBOSE)
 %   Align the template image TMPLT to an example image IMG using an
 %   affine warp initialised using P_INIT. Iterate for N_ITERS iterations.
-%   Huber M-estimator var.K is the tuning parameter
+%   VAR.PERC_OUT percent of the pixels are assumed to be outliers.
 %   To display the fit graphically set VERBOSE non-zero.
 %
 %   p_init = [p1, p3, p5
@@ -21,7 +21,7 @@ function fitt = affine_ic_irls_3d(img, tmplt, p_init, n_iters, verbose, var)
 % FIT = AFFINE_IC_IRLS(IMG, TMPLT, P_INIT, N_ITERS, VAR, VERBOSE)
 % to
 % FIT = AFFINE_IC_IRLS(IMG, TMPLT, P_INIT, N_ITERS, VERBOSE, VAR)
-% var.k is manually set (line 34)
+% var.perc_out is manually set (line 34)
 % image smoothing (lines 35,36,37) 
 
 if nargin<5 verbose = 0; end
@@ -31,7 +31,7 @@ if nargin<4 error('Not enough input arguments'); end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Pre-computable things ---------------------------------------------------
-var.k = 1.3;
+var.perc_out = 0.4;
 % Filter with Gaussian kernel
 img = smooth_img(img);
 tmplt = smooth_img(tmplt);
@@ -66,7 +66,7 @@ for f=1:n_iters
   if (f == n_iters) break; end
 
   % Compute robust error funtion
-  weight = robust_error_3d(error_img, var.k);
+  weight = robust_error_3d(error_img, var.perc_out);
 
   % 6) Compute robust Hessian
   H     = hessian_weight_3d(VT_dW_dp, weight, N_p, w);
