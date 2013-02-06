@@ -8,7 +8,8 @@ function weight = robust_error_3d(error_img, k)
 % Carnegie Mellon University, Pittsburgh
 
 weight = zeros(size(error_img));
-weight(abs(error_img) <= k) = 1;
-weight(abs(error_img) > k) = abs(error_img(abs(error_img) > k)) / k;
+error_img = abs(error_img);
+weight(error_img <= k) = 1;
+weight(error_img > k) = k / error_img(error_img > k);
 
 
