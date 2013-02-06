@@ -65,8 +65,12 @@ for f=1:n_iters
   % -- Really iteration 1 is the zeroth, ignore final computation --
   if (f == n_iters) break; end
 
-  % Compute robust error funtion
-  weight = robust_error_3d(error_img, var.perc_out);
+  % Compute robust error funtion (ignore 0 voxels as they are clean cuts
+  % in the data and thus don't represent correlation)
+  IWxp_ignore = IWxp;
+  IWxp_ignore(IWxp_ignore == 0) = NaN;
+  error_img_ignore = IWxp_ignore - tmplt;
+  weight = robust_error_3d(error_img_ignore, var.perc_out);
 
   % 6) Compute robust Hessian
   H     = hessian_weight_3d(VT_dW_dp, weight, N_p, w);
