@@ -37,13 +37,13 @@ img   = imfilter(img, H, 'replicate');
 tmplt = imfilter(tmplt, H, 'replicate');
 
 % Gradient of template
-[tx, ty] = myEdge(tmplt, 5);
+[tx, ty] = custom_gradient(tmplt, 5);
 ang = angle(tx + 1i * ty);
 tx = cos(ang); 
 ty = sin(ang);
 
-[txx, txy] = myEdge(tx, 5);
-[tyx, tyy] = myEdge(ty, 5);
+[txx, txy] = custom_gradient(tx, 5);
+[tyx, tyy] = custom_gradient(ty, 5);
 tyx = txy;
 
 fx = -sin(ang); 
@@ -78,7 +78,7 @@ for f=1:n_iters
         IWxp = warp_a(img, warp_p, tmplt_pts);  
     end
     
-    [vx, vy] = myEdge(IWxp, 5);
+    [vx, vy] = custom_gradient(IWxp, 5);
     ang = angle(vx + 1i * vy);
     vx = cos(ang); 
     vy = sin(ang);
@@ -112,36 +112,35 @@ for f=1:n_iters
     imerror = lambda * u_bold;
     
     % Gradient descent parameter updates
-    %delta_p = inv_Q * imerror;
     delta_p =  Q \ imerror;
 
     % Update warp parmaters
     warp_p = update_step(warp_p, delta_p);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [bx, by] = myEdge(I, par)
+function [gx, gy] = custom_gradient(I, par)
 
 if par == 1
-    gx = [-1/2, 0, 1/2];
+    k = [-1/2, 0, 1/2];
 elseif par == 2
-    gx = [1/12, -2/3, 0, 2/3, -1/12];
+    k = [1/12, -2/3, 0, 2/3, -1/12];
 elseif par == 3
-    gx = [-1/60, 3/20, -3/4, 0, 3/4, -3/20, 1/60];
+    k = [-1/60, 3/20, -3/4, 0, 3/4, -3/20, 1/60];
 elseif par == 4
     sigma = 1;
-    gx = Gradx_oG(max(1, floor(5 * sigma)), sigma);
+    k = Gradx_oG(max(1, floor(5 * sigma)), sigma);
 elseif par == 5
-    gx = -dxmask;
+    k = -dxmask;
 elseif par == 6
-    gx = -dxxmask;
+    k = -dxxmask;
 elseif par == 7
-    gx = -dxymask;
+    k = -dxymask;
 end
 
-n = length(gx); 
+n = length(k); 
 padded = padarray(I, [n, n], 'replicate');
-bx = crop2(conv2(padded, gx, 'same'), n, n);
-by = crop2(conv2(padded, gx', 'same'), n, n);   
+gx = crop2(conv2(padded, k, 'same'), n, n);
+gy = crop2(conv2(padded, k', 'same'), n, n);   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function result = dxmask
 % Create 9x9 convolution matrix
