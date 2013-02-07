@@ -126,7 +126,7 @@ end
 function [bx, by] = myEdge(I, par)
 
 if par == 1
-    gx = [1, 0, -1] / 2;
+    gx = [-1, 0, 1] / 2;
 elseif par == 2
     gx = [1/12, -2/3, 0, 2/3, -1/12];
 elseif par == 3
