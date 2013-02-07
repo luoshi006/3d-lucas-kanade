@@ -40,7 +40,7 @@ addpath data
 load myYaleCropped.mat
 
 % List of algorithms to run
-alg_list = {'affine_ic' 'affine_ECC_ic' 'affine_ic_irls' 'affine_GaborFourier_ic' 'affine_GradientImages_ic' 'affine_GradientCorr_ic'};
+alg_list = {'affine_GradientCorr_ic' 'affine_GradientCorr_ic_encrypted'};
 
 % Test parameters
 verbose = 1;					% Show fitting?

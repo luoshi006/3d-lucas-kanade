@@ -128,7 +128,7 @@ end
 function [bx, by] = myEdge(I, par)
 
 if par == 1
-    gx = [-1, 0, 1] / 2;
+    gx = [-1/2, 0, 1/2];
 elseif par == 2
     gx = [1/12, -2/3, 0, 2/3, -1/12];
 elseif par == 3
@@ -150,28 +150,15 @@ bx = crop2(conv2(padded, gx, 'same'), n, n);
 by = crop2(conv2(padded, gx', 'same'), n, n);   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function result = dxmask
-result = [0 0 0  0 0 0 0 0 0; 
-          0 0 0  0 0 0 0 0 0;  
-          0 0 0  0 0 0 0 0 0;  
-          0 0 0  0 0 0 0 0 0; 
-          0 0 0 -1 0 1 0 0 0 
-          0 0 0  0 0 0 0 0 0; 
-          0 0 0  0 0 0 0 0 0; 
-          0 0 0  0 0 0 0 0 0; 
-          0 0 0  0 0 0 0 0 0] / 2;
+% Create 9x9 convolution matrix
+result = padarray([-1/2, 0, 1/2], [4, 3]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
 function result = dxxmask
-result = [0 0 0  0  0 0 0 0 0; 
-          0 0 0  0  0 0 0 0 0;  
-          0 0 0  0  0 0 0 0 0;  
-          0 0 0  0  0 0 0 0 0; 
-          0 0 0  1 -2 1 0 0 0 
-          0 0 0  0  0 0 0 0 0; 
-          0 0 0  0  0 0 0 0 0; 
-          0 0 0  0  0 0 0 0 0; 
-          0 0 0  0  0 0 0 0 0];
+% Create 9x9 convolution matrix
+result = padarray([1, -2, 1], [4, 3]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function result = dxymask
+% Create 9x9 convolution matrix
 result = conv2(dxmask, dxmask', 'same');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function result = crop2(data, ny, nx)
