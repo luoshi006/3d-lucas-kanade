@@ -67,9 +67,9 @@ dW_dp = jacobian_a(w, h);
 Gx = image_jacobian(txx, txy, dW_dp, N_p);
 Gy = image_jacobian(tyx, tyy, dW_dp, N_p);
 
-G = fx .* Gx + fy .* Gy;
 Gxx = fx .* Gx; 
 Gyy = fy .* Gy;
+G = Gxx + Gyy;
 
 % Hessian and its inverse
 Q = Gxx' * Gxx + Gyy' * Gyy;
@@ -101,7 +101,9 @@ for f=1:n_iters
     end
     
     % -- Really iteration 1 is the zeroth, ignore final computation --
-    if (f == n_iters) break; end
+    if (f == n_iters) 
+        break; 
+    end
     
     u_bold = G' * (tx(:) .* vy(:) - ty(:) .* vx(:));
     u      = vx(:)' * tx(:) + vy(:)' * ty(:);
@@ -155,6 +157,20 @@ result = [0 0 0  0 0 0 0 0 0;
           0 0 0  0 0 0 0 0 0; 
           0 0 0  0 0 0 0 0 0; 
           0 0 0  0 0 0 0 0 0] / 2;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
+function result = dxxmask
+result = [0 0 0  0  0 0 0 0 0; 
+          0 0 0  0  0 0 0 0 0;  
+          0 0 0  0  0 0 0 0 0;  
+          0 0 0  0  0 0 0 0 0; 
+          0 0 0  1 -2 1 0 0 0 
+          0 0 0  0  0 0 0 0 0; 
+          0 0 0  0  0 0 0 0 0; 
+          0 0 0  0  0 0 0 0 0; 
+          0 0 0  0  0 0 0 0 0];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function result = dxymask
+result = conv2(dxmask, dxmask', 'same');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function result = crop2(data, ny, nx)
 [ysize, xsize] = size(data);
