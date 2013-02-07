@@ -1,4 +1,4 @@
-function fitt  = affine_GradientCorr_ic(img, tmplt, p_init, n_iters, verbose)
+function fitt = affine_GradientCorr_ic(img, tmplt, p_init, n_iters, verbose)
 % affine_GradientCorr_ic - Affine image alignment using the proposed maximization of gradient correlation [1] 
 %
 %   FIT = affine_GradientCorr_ic(IMG, TMPLT, P_INIT, N_ITERS, VERBOSE)
@@ -79,8 +79,10 @@ v = numel(tmplt);
 
 % Inverse Compositional Algorithm  -------------------------------
 for f=1:n_iters
-    % Warped image with current parameters
-    IWxp = warp_a(img, warp_p, tmplt_pts);  
+    % Warped image with current parameters (don't warp first iteration)
+    if (exist('warp_p', 'var'))
+        IWxp = warp_a(img, warp_p, tmplt_pts);  
+    end
     
     [vx, vy] = myEdge(IWxp, 5);
     ang = angle(vx + 1i * vy);
