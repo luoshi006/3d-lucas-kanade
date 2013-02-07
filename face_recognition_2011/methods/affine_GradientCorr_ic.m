@@ -143,9 +143,11 @@ elseif par == 6
 elseif par == 7
     gx = -dxymask;
 end
-    
-bx = crop2(conv2(extend2(I, length(gx), length(gx)), gx, 'same'), length(gx), length(gx));     
-by = crop2(conv2(extend2(I, length(gx), length(gx)), gx', 'same'), length(gx), length(gx));   
+
+n = length(gx); 
+padded = padarray(I, [n, n], 'replicate');
+bx = crop2(conv2(padded, gx, 'same'), n, n);
+by = crop2(conv2(padded, gx', 'same'), n, n);   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function result = dxmask
 result = [0 0 0  0 0 0 0 0 0; 
@@ -175,27 +177,3 @@ result = conv2(dxmask, dxmask', 'same');
 function result = crop2(data, ny, nx)
 [ysize, xsize] = size(data);
 result = data((ny + 1:ysize - ny), (nx + 1:xsize - nx));
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function result = extend2(data, ny, nx)
-[ysize, xsize] = size(data);
-newxsize = xsize + 2 * nx;
-newysize = ysize + 2 * ny;
-
-result = zeros(newysize, newxsize);
-result((ny + 1:ysize + ny), (nx + 1:xsize + nx)) = data;
-
-for x = 1:nx
-    result(:, x) = result(:, nx + 1); 
-end
-
-for x = (xsize + nx + 1):newxsize
-    result(:, x) = result(:, xsize + nx); 
-end
-
-for y = 1:ny
-    result(y, :) = result(ny + 1, :); 
-end
-
-for y = (ysize + ny + 1):newysize
-    result(y, :) = result(ysize + ny, :); 
-end
