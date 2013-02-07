@@ -35,12 +35,6 @@ init_a;
 H     = fspecial('gaussian', [5 5], 2.0);
 img   = imfilter(img, H, 'replicate');
 tmplt = imfilter(tmplt, H, 'replicate');
-% Gradients of image - will warp these later
-%[vx1 vy1] = myEdge(img, 5);
-% vabs = abs(vx1 + 1i*vy1);
-% vx1 = vx1./vabs; vy1 = vy1./vabs;
-% vx1(isnan(vx1))=0;
-% vy1(isnan(vy1))=0;
 
 % Gradient of template
 [tx, ty] = myEdge(tmplt, 5);
