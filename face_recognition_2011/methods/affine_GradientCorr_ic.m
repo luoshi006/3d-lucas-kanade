@@ -43,9 +43,9 @@ cos_phi1 = cos(phi1);
 sin_phi1 = sin(phi1);
 
 % Second order derivatives
-[txx, txy] = custom_gradient(cos_phi1, 5);
-[tyx, tyy] = custom_gradient(sin_phi1, 5);
-tyx = txy;
+[g1xx, g1xy] = custom_gradient(cos_phi1, 5);
+[g1yx, g1yy] = custom_gradient(sin_phi1, 5);
+g1yx = g1xy;
 
 fx = -sin_phi1;
 fx = fx(:); 
@@ -60,13 +60,13 @@ fy = repmat(fy, 1, N_p);
 % Jacobian 
 dW_dp = jacobian_a(w, h);
 % [g1,xx, g1,xy] * dW_dp
-Gx = image_jacobian(txx, txy, dW_dp, N_p);
+Gx = image_jacobian(g1xx, g1xy, dW_dp, N_p);
 % [g1,yx, g1,yy] * dW_dp
-Gy = image_jacobian(tyx, tyy, dW_dp, N_p);
+Gy = image_jacobian(g1yx, g1yy, dW_dp, N_p);
 
-% -sin(theta1) . dg1,x_dp (23)
+% -sin(theta1) . dg1x_dp (23)
 Jxx = fx .* Gx; 
-% cos(theta1) . dg1,y_dp (23)
+% cos(theta1) . dg1y_dp (23)
 Jyy = fy .* Gy;
 J = Jxx + Jyy;
 
