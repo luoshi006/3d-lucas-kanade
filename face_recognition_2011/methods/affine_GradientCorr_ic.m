@@ -38,38 +38,44 @@ tmplt = imfilter(tmplt, H, 'replicate');
 
 % Gradient of template
 [tx, ty] = custom_gradient(tmplt, 5);
-ang = angle(tx + 1i * ty);
-tx = cos(ang); 
-ty = sin(ang);
+phi1 = angle(tx + 1i * ty);
+cos_phi1 = cos(phi1); 
+sin_phi1 = sin(phi1);
 
-[txx, txy] = custom_gradient(tx, 5);
-[tyx, tyy] = custom_gradient(ty, 5);
+% Second order derivatives
+[txx, txy] = custom_gradient(cos_phi1, 5);
+[tyx, tyy] = custom_gradient(sin_phi1, 5);
 tyx = txy;
 
-fx = -sin(ang); 
+fx = -sin_phi1;
 fx = fx(:); 
 fx(isnan(fx)) = 0; 
 fx = repmat(fx, 1, N_p); 
 
-fy = cos(ang);
+fy = cos_phi1;
 fy = fy(:); 
 fy(isnan(fy)) = 0;  
 fy = repmat(fy, 1, N_p);
 
 % Jacobian 
 dW_dp = jacobian_a(w, h);
+% [g1,xx, g1,xy] * dW_dp
 Gx = image_jacobian(txx, txy, dW_dp, N_p);
+% [g1,yx, g1,yy] * dW_dp
 Gy = image_jacobian(tyx, tyy, dW_dp, N_p);
 
-Gxx = fx .* Gx; 
-Gyy = fy .* Gy;
-G = Gxx + Gyy;
+% -sin(theta1) . dg1,x_dp (23)
+Jxx = fx .* Gx; 
+% cos(theta1) . dg1,y_dp (23)
+Jyy = fy .* Gy;
+J = Jxx + Jyy;
 
 % Hessian and its inverse
-Q = Gxx' * Gxx + Gyy' * Gyy;
+H = Jxx' * Jxx + Jyy' * Jyy;
+Hinv = inv(H);
 
 % Other precomputable
-v = numel(tmplt);
+N = numel(tmplt);
 
 % Inverse Compositional Algorithm  -------------------------------
 for f=1:n_iters
@@ -79,10 +85,9 @@ for f=1:n_iters
     end
     
     [vx, vy] = custom_gradient(IWxp, 5);
-    ang = angle(vx + 1i * vy);
-    vx = cos(ang); 
-    vy = sin(ang);
-
+    phi2 = angle(vx + 1i * vy);
+    cos_phi2 = cos(phi2); 
+    sin_phi2 = sin(phi2);
     
     % -- Save current fit parameters --
     fitt(f).warp_p = warp_p;
@@ -99,12 +104,12 @@ for f=1:n_iters
         break; 
     end
     
-    u_bold = G' * (tx(:) .* vy(:) - ty(:) .* vx(:));
-    u      = vx(:)' * tx(:) + vy(:)' * ty(:);
+    u_bold = J' * (cos_phi1(:) .* sin_phi2(:) - sin_phi1(:) .* cos_phi2(:));
+    qp     = cos_phi2(:)' * cos_phi1(:) + sin_phi2(:)' * sin_phi1(:);
     
-    % lambda 
-    lambda = v / u;
-    if u < 0 
+    % lambda = (1 / qtilde) = (1 / (qp / N))
+    lambda = N / qp;
+    if qp < 0 
         break; 
     end
     
@@ -112,7 +117,7 @@ for f=1:n_iters
     imerror = lambda * u_bold;
     
     % Gradient descent parameter updates
-    delta_p =  Q \ imerror;
+    delta_p =  Hinv * imerror;
 
     % Update warp parmaters
     warp_p = update_step(warp_p, delta_p);
