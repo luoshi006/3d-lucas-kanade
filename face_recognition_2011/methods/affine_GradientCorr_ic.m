@@ -104,19 +104,20 @@ for f=1:n_iters
         break; 
     end
     
-    u_bold = J' * (cos_phi1(:) .* sin_phi2(:) - sin_phi1(:) .* cos_phi2(:));
+    % J' SΔΦ
+    JT_Sdelta = J' * (cos_phi1(:) .* sin_phi2(:) - sin_phi1(:) .* cos_phi2(:));
     qp     = cos_phi2(:)' * cos_phi1(:) + sin_phi2(:)' * sin_phi1(:);
     
-    % lambda = (1 / qtilde) = (1 / (qp / N))
+    % λ = (1 / qtilde) = (1 / (qp / N))
     lambda = N / qp;
     if qp < 0 
         break; 
     end
     
     % Error 
-    imerror = lambda * u_bold;
+    imerror = lambda * JT_Sdelta;
     
-    % Gradient descent parameter updates
+    % Gradient descent parameter updates -> λ inv(J'J) J' SΔΦ
     delta_p =  Hinv * imerror;
 
     % Update warp parmaters
