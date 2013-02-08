@@ -31,20 +31,22 @@ if verbose
    img1 = img; 
    tmplt1 = tmplt;     
 end
+
 init_a;
+
 H     = fspecial('gaussian', [5 5], 2.0);
 img   = imfilter(img, H, 'replicate');
 tmplt = imfilter(tmplt, H, 'replicate');
 
 % Gradient of template
-[tx, ty] = custom_gradient(tmplt, 5);
+[tx, ty] = gradient(tmplt);
 phi1 = angle(tx + 1i * ty);
 cos_phi1 = cos(phi1); 
 sin_phi1 = sin(phi1);
 
 % Second order derivatives
-[g1xx, g1xy] = custom_gradient(cos_phi1, 5);
-[g1yx, g1yy] = custom_gradient(sin_phi1, 5);
+[g1xx, g1xy] = gradient(cos_phi1);
+[g1yx, g1yy] = gradient(sin_phi1);
 g1yx = g1xy;
 
 fx = -sin_phi1;
@@ -84,7 +86,7 @@ for f=1:n_iters
         IWxp = warp_a(img, warp_p, tmplt_pts);  
     end
     
-    [vx, vy] = custom_gradient(IWxp, 5);
+    [vx, vy] = gradient(IWxp);
     phi2 = angle(vx + 1i * vy);
     cos_phi2 = cos(phi2); 
     sin_phi2 = sin(phi2);
@@ -123,43 +125,3 @@ for f=1:n_iters
     % Update warp parmaters
     warp_p = update_step(warp_p, delta_p);
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gx, gy] = custom_gradient(I, par)
-
-if par == 1
-    k = [-1/2, 0, 1/2];
-elseif par == 2
-    k = [1/12, -2/3, 0, 2/3, -1/12];
-elseif par == 3
-    k = [-1/60, 3/20, -3/4, 0, 3/4, -3/20, 1/60];
-elseif par == 4
-    sigma = 1;
-    k = Gradx_oG(max(1, floor(5 * sigma)), sigma);
-elseif par == 5
-    k = -dxmask;
-elseif par == 6
-    k = -dxxmask;
-elseif par == 7
-    k = -dxymask;
-end
-
-n = length(k); 
-padded = padarray(I, [n, n], 'replicate');
-gx = crop2(conv2(padded, k, 'same'), n, n);
-gy = crop2(conv2(padded, k', 'same'), n, n);   
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function result = dxmask
-% Create 9x9 convolution matrix
-result = padarray([-1/2, 0, 1/2], [4, 3]);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
-function result = dxxmask
-% Create 9x9 convolution matrix
-result = padarray([1, -2, 1], [4, 3]);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function result = dxymask
-% Create 9x9 convolution matrix
-result = conv2(dxmask, dxmask', 'same');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function result = crop2(data, ny, nx)
-[ysize, xsize] = size(data);
-result = data((ny + 1:ysize - ny), (nx + 1:xsize - nx));
