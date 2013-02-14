@@ -40,16 +40,19 @@ if nargin<4 error('Not enough input arguments'); end
 
 % 3) Evaluate gradient of T
 [g1x, g1y, g1z] = gradient(tmplt);
-G1 = [g1x(:), g1y(:), g1z(:)];
 
 % Calculate df(g1,x[0]) / dg1,x[0]
-g1x2 = g1x.^2;
-g1y2 = g1y.^2;
-g1z2 = g1z.^2;
-df_g1_denom = (g1x2 + g1y2 + g1z2).^(3/2) + (10^-6);
+g1x2 = g1x .^ 2;
+g1y2 = g1y .^ 2;
+g1z2 = g1z .^ 2;
+g1_norm = sqrt(g1x2 + g1x2 + g1x2) + (10^-6);
+df_g1_denom = g1_norm .^ 3;
 dF_g1x = (g1y2 + g1z2) ./ df_g1_denom;
 dF_g1y = (g1x2 + g1z2) ./ df_g1_denom;
 dF_g1z = (g1x2 + g1y2) ./ df_g1_denom;
+
+G1 = (g1x + g1y + g1z) ./ g1_norm;
+G1 = G1(:);
 
 % Calculate dg1,x[0]/dp
 [g1xx, g1xy, g1xz] = gradient(g1x);
@@ -75,7 +78,7 @@ nabla_g1z = dF_g1z .* dg1z_dp;
 J = nabla_g1x + nabla_g1y + nabla_g1z;
 
 % Hessian and its inverse
-H = J' * J;
+H = nabla_g1x' * nabla_g1x + nabla_g1y' * nabla_g1y + nabla_g1z' * nabla_g1z;
 invH = inv(H);
 
 % Inverse Compositional Algorithm  -------------------------------
@@ -91,7 +94,9 @@ for f=1:n_iters
     fitt(f).warp_p = warp_p;
     
     [g2x, g2y, g2z] = gradient(IWxp);
-    G2 = [g1x(:), g2y(:), g2z(:)];
+    g2_norm = sqrt(g2x .^ 2 + g2y .^ 2 + g2z .^ 2) + (10^-6);
+    G2 = (g2x + g2y + g2z) ./ g1_norm;
+    G2 = G2(:);
     
     % -- Show fitting? --
     if verbose
@@ -103,11 +108,13 @@ for f=1:n_iters
     
     Gw     = J' * G1;
     Gr     = J' * G2;
-    num    = norm(G1(:))^2 - Gw' * invH * Gw;
-    den    = dot(IWxp(:), tmplt(:)) - Gr' * invH * Gw;
+    num    = norm(G1)^2 - Gw' * invH * Gw;
+    den    = dot(G1, G2) - Gr' * invH * Gw;
     lambda = num / den;
     
-    if den < 0 break; end
+    if den < 0 
+        break; 
+    end
     
     % Error
     imerror = lambda * IWxp - tmplt;
