@@ -122,7 +122,7 @@ for f=1:n_iters
     end
     
     % Error
-    imerror = lambda * G1 - G2;
+    imerror = lambda * G2 - G1;
     Ge      = J' * imerror;
     
     % Gradient descent parameter updates
