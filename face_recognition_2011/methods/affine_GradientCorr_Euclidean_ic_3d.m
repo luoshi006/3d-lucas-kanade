@@ -1,4 +1,4 @@
-function fitt  = affine_GradientCorr_Euclidean_ic_3d(img, tmplt, p_init, n_iters, verbose)
+function fitt = affine_GradientCorr_Euclidean_ic_3d(img, tmplt, p_init, n_iters, verbose)
 % affine_ECC_ic - Affine image alignment using the enhanced correlation coefficient [1] and the
 % inverse-compositional algorithm of Baker-Matthews [2]
 %
@@ -84,18 +84,14 @@ invH = inv(H);
 % Inverse Compositional Algorithm  -------------------------------
 for f=1:n_iters
     % Warped image with current parameters
-    try
-        IWxp = warp_3d_a(img, warp_p, tmplt_pts);
-    catch ME
-        break;
-    end
+    IWxp = warp_3d_a(img, warp_p, tmplt_pts);
     
     % -- Save current fit parameters --
     fitt(f).warp_p = warp_p;
     
     [g2x, g2y, g2z] = gradient(IWxp);
     g2_norm = sqrt(g2x .^ 2 + g2y .^ 2 + g2z .^ 2) + (10^-6);
-    G2 = (g2x + g2y + g2z) ./ g1_norm;
+    G2 = (g2x + g2y + g2z) ./ g2_norm;
     G2 = G2(:);
     
     % -- Show fitting? --
@@ -106,19 +102,24 @@ for f=1:n_iters
     % -- Really iteration 1 is the zeroth, ignore final computation --
     if (f == n_iters) break; end
     
-    Gw     = J' * G1;
-    Gr     = J' * G2;
-    num    = norm(G1)^2 - Gw' * invH * Gw;
-    den    = dot(G1, G2) - Gr' * invH * Gw;
-    lambda = num / den;
+    Gw      = J' * G1;
+    wPgw    = Gw' * invH * Gw;
+    Gr      = J' * G2;
+    rPgr    = Gr' * invH * Gr;
+    rPgw    = Gr' * invH * Gw;
     
-    if den < 0 
+    lambda1 = sqrt(wPgw / rPgr);
+    lambda2 = (rPgw - dot(G1, G2)) / rPgr;
+    
+    lambda  = max(lambda1, lambda2);
+    
+    if lambda < 0 
         break; 
     end
     
     % Error
-    imerror = lambda * IWxp - tmplt;
-    Ge      = J' * imerror(:);
+    imerror = lambda * G1 - G2;
+    Ge      = J' * imerror;
     
     % Gradient descent parameter updates
     delta_p = invH * Ge;
