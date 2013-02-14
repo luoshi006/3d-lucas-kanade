@@ -109,10 +109,10 @@ for f=1:n_iters
     rPgw    = Gr' * invH * Gw;
     
     lambda1 = sqrt(wPgw / rPgr);
-    lambda2 = (rPgw - dot(G1, G2)) / rPgr;
+    lambda2 = (rPgw - dot(G2, G1)) / rPgr;
     
     %num    = norm(G1)^2 - Gw' * invH * Gw;
-    %den    = dot(G1, G2) - Gr' * invH * Gw;
+    %den    = dot(G2, G1) - Gr' * invH * Gw;
     %lambda = num / den;
     
     lambda  = max(lambda1, lambda2);

@@ -11,7 +11,8 @@ function run_affine_3d(data_name)
 if nargin<1 error('Not enough input arguments'); end
 
 % List of algorithms to run
-alg_list = {'affine_GradientCorr_Euclidean_ic_3d'};%{'affine_ECC_ic_3d'};
+alg_list = {'affine_GradientCorr_Euclidean_ic_3d'};
+alg_list = {'affine_ECC_ic_3d'};
 
 % Test parameters
 verbose = 1;					% Show fitting?
