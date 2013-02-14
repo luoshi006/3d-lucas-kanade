@@ -56,8 +56,8 @@ G1 = G1(:);
 
 % Calculate dg1,x[0]/dp
 [g1xx, g1xy, g1xz] = gradient(g1x);
-[g1yx, g1yy, g1yz] = gradient(g1x);
-[g1zx, g1zy, g1zz] = gradient(g1x);
+[g1yx, g1yy, g1yz] = gradient(g1y);
+[g1zx, g1zy, g1zz] = gradient(g1z);
 g1yx = g1xy;
 g1yz = g1zy;
 g1xz = g1zx;
@@ -111,9 +111,9 @@ for f=1:n_iters
     lambda1 = sqrt(wPgw / rPgr);
     lambda2 = (rPgw - dot(G2, G1)) / rPgr;
     
-    %num    = norm(G1)^2 - Gw' * invH * Gw;
-    %den    = dot(G2, G1) - Gr' * invH * Gw;
-    %lambda = num / den;
+%     num    = norm(G1)^2 - Gw' * invH * Gw;
+%     den    = dot(G2, G1) - Gr' * invH * Gw;
+%     lambda = num / den;
     
     lambda  = max(lambda1, lambda2);
     
