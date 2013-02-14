@@ -103,21 +103,21 @@ for f=1:n_iters
     if (f == n_iters) break; end
     
     Gw      = J' * G1;
-    wPgw    = Gw' * invH * Gw;
+%     wPgw    = Gw' * invH * Gw;
     Gr      = J' * G2;
-    rPgr    = Gr' * invH * Gr;
-    rPgw    = Gr' * invH * Gw;
+%     rPgr    = Gr' * invH * Gr;
+%     rPgw    = Gr' * invH * Gw;
+%     
+%     lambda1 = sqrt(wPgw / rPgr);
+%     lambda2 = (rPgw - dot(G2, G1)) / rPgr;
+%     lambda  = max(lambda1, lambda2);
     
-    lambda1 = sqrt(wPgw / rPgr);
-    lambda2 = (rPgw - dot(G2, G1)) / rPgr;
-    
-%     num    = norm(G1)^2 - Gw' * invH * Gw;
-%     den    = dot(G2, G1) - Gr' * invH * Gw;
-%     lambda = num / den;
-    
-    lambda  = max(lambda1, lambda2);
-    
-    if lambda < 0 
+    num    = norm(G1)^2 - Gw' * invH * Gw;
+    den    = dot(G2, G1) - Gr' * invH * Gw;
+    lambda = num / den;
+
+    if den < 0 
+        fprintf('The denominator is diverging: %f', den);
         break; 
     end
     
