@@ -111,6 +111,10 @@ for f=1:n_iters
     lambda1 = sqrt(wPgw / rPgr);
     lambda2 = (rPgw - dot(G1, G2)) / rPgr;
     
+    %num    = norm(G1)^2 - Gw' * invH * Gw;
+    %den    = dot(G1, G2) - Gr' * invH * Gw;
+    %lambda = num / den;
+    
     lambda  = max(lambda1, lambda2);
     
     if lambda < 0 
