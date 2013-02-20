@@ -111,11 +111,6 @@ while offset_idx <= n_freq_tests
         save matfileint.mat p_init;
         string = ['fitt = ', alg_list{l}, '(img, tmplt, p_init, n_iters, verbose);'];
         eval(string);
-        if verbose == 1
-            string = [alg_list{l} ' fitting finished, press any key to continue'];
-            disp(string)
-            pause
-        end
         rms_pt_error = ComputePointError(test_pts, template_affine, fitt(end).warp_p);
         fitt = [];
         % Save spatial errors

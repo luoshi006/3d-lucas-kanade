@@ -40,7 +40,10 @@ addpath data
 load myYaleCropped.mat
 
 % List of algorithms to run
-alg_list = {'affine_GradientCorr_ic' 'affine_GradientCorr_ic_encrypted'};
+% Get all non-3d algorithms
+alg_list = get_all_files('methods', 'affine(_[\w]+)?_ic(?!_3d)([_A-Za-z]+)?\.(p|m)');
+alg_list = cellfun(@(x) x(1:length(x)-2), alg_list, 'UniformOutput', false);
+% alg_list = {'affine_GradientCorr_ic' 'affine_GradientCorr_Euclidean_ic'};
 
 % Test parameters
 verbose = 1;					% Show fitting?
