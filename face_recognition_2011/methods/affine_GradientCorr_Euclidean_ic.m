@@ -35,8 +35,9 @@ if nargin<4 error('Not enough input arguments'); end
 init_a;
 
 % Filter with Gaussian kernel
-%img = smooth_img(img);
-%tmplt = smooth_img(tmplt);
+H     = fspecial('gaussian', [5 5], 2.0);
+img   = imfilter(img, H, 'replicate');
+tmplt = imfilter(tmplt, H, 'replicate');
 
 % 3) Evaluate gradient of T
 [g1x, g1y] = gradient(tmplt);
@@ -45,11 +46,12 @@ init_a;
 g1x2 = g1x .^ 2;
 g1y2 = g1y .^ 2;
 
-g1_norm = sqrt(g1x2 + g1x2);
+g1_norm = abs(g1x + 1i*g1y);
 df_g1_denom = g1_norm .^ 3;
 
-g1_norm = g1_norm + median(g1_norm(:));
-df_g1_denom = df_g1_denom + median(df_g1_denom(:));
+m_ab = median(g1_norm(:));
+g1_norm = g1_norm + m_ab;
+df_g1_denom = df_g1_denom + m_ab;
 
 dF_g1x = g1y2 ./ df_g1_denom;
 dF_g1y = g1x2 ./ df_g1_denom;
@@ -87,7 +89,7 @@ for f=1:n_iters
     fitt(f).warp_p = warp_p;
     
     [g2x, g2y] = gradient(IWxp);
-    g2_norm = sqrt(g2x .^ 2 + g2y .^ 2);
+    g2_norm = abs(g2x + 1i*g2y);
     g2_norm = g2_norm + median(g2_norm(:));
     G2 = (g2x + g2y) ./ g2_norm;
     G2 = G2(:);
