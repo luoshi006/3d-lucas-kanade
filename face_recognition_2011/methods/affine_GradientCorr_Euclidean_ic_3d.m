@@ -46,7 +46,7 @@ g1x2 = g1x .^ 2;
 g1y2 = g1y .^ 2;
 g1z2 = g1z .^ 2;
 
-g1_norm = abs(sqrt(g1x2 + g1y2 + g1z2));
+g1_norm = sqrt(g1x2 + g1y2 + g1z2);
 df_g1_denom = g1_norm .^ 3;
 
 m_ab = g1_norm(:);
@@ -98,7 +98,7 @@ for f=1:n_iters
     fitt(f).warp_p = warp_p;
     
     [g2x, g2y, g2z] = gradient(IWxp);
-    g2_norm = abs(sqrt(g2x .^ 2 + g2y .^ 2 + g2z .^ 2));
+    g2_norm = sqrt(g2x .^ 2 + g2y .^ 2 + g2z .^ 2);
     m_ab = g2_norm(:);
     m_ab(m_ab == 0) = NaN;
     m_ab = nanmedian(m_ab);
