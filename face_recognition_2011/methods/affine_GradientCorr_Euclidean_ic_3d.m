@@ -35,8 +35,8 @@ if nargin<4 error('Not enough input arguments'); end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Filter with Gaussian kernel
-%img = smooth_img(img);
-%tmplt = smooth_img(tmplt);
+img = smooth_img(img);
+tmplt = smooth_img(tmplt);
 
 % 3) Evaluate gradient of T
 [g1x, g1y, g1z] = gradient(tmplt);
