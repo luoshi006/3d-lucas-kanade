@@ -96,12 +96,13 @@ function [gx, gy, gz] = cootes_taylor_features(img)
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(img);
 
 % abs(nabla_Tx + 1i * nabla_Ty) == sqrt(nabla_Tx.^2 + nabla_Ty.^2)
-ab     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2); 
+ab     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
 abc    = ab(:);
-m_ab   = median(abc);
+abc(abc == 0) = NaN;
+m_ab   = nanmedian(abc);
 
 if (m_ab == 0)
-    m_ab = mean(abc);
+    m_ab = mean(ab(:));
 end
 
 ab = ab + m_ab;
