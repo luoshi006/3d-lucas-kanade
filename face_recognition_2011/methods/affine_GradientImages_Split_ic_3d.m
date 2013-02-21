@@ -1,4 +1,4 @@
-function fitt = affine_GradientImages_ic_3d(img, tmplt, p_init, n_iters, verbose)
+function fitt = affine_GradientImages_Split_ic_3d(img, tmplt, p_init, n_iters, verbose)
 % affine_GradientImages_ic - Affine image alignment using the features proposed by Cootes-Taylor [1] and the
 % inverse-compositional algorithm of Baker-Matthews [2]
 %
@@ -34,15 +34,16 @@ if nargin<4 error('Not enough input arguments'); end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Filter with Gaussian kernel
-img = smooth_img(img);
-tmplt = smooth_img(tmplt);
+% img = smooth_img(img);
+% tmplt = smooth_img(tmplt);
 
 % Cootes-Taylor feature extraction from template
-[gx, gy, gz] = cootes_taylor_features(tmplt);
+[g1x, g1y, g1z, g1sz] = cootes_taylor_features(tmplt);
 
-[nabla_Txx, nabla_Txy, nabla_Txz] = gradient(gx);
-[nabla_Tyx, nabla_Tyy, nabla_Tyz] = gradient(gy);
-[nabla_Tzx, nabla_Tzy, nabla_Tzz] = gradient(gz);
+[nabla_Txx, nabla_Txy, nabla_Txz] = gradient(g1x);
+[nabla_Tyx, nabla_Tyy, nabla_Tyz] = gradient(g1y);
+[nabla_Tzx, nabla_Tzy, nabla_Tzz] = gradient(g1z);
+[nabla_Tszx, nabla_Tszy, nabla_Tszz] = gradient(g1sz);
 % Approximates fully differentiable gradients
 nabla_Tyx = nabla_Txy;
 nabla_Tyz = nabla_Tzy;
@@ -53,9 +54,10 @@ dW_dp = jacobian_3d_a(w, h, d);
 Gx = image_jacobian_3d(nabla_Txx, nabla_Txy, nabla_Txz, dW_dp, N_p);
 Gy = image_jacobian_3d(nabla_Tyx, nabla_Tyy, nabla_Tyz, dW_dp, N_p);
 Gz = image_jacobian_3d(nabla_Tzx, nabla_Tzy, nabla_Tzz, dW_dp, N_p);
+Gsz = image_jacobian_3d(nabla_Tszx, nabla_Tszy, nabla_Tszz, dW_dp, N_p);
 
 % Hessian and its inverse
-Q     = Gx' * Gx + Gy' * Gy + Gz' * Gz;
+Q     = Gx' * Gx + Gy' * Gy + Gz' * Gz + Gsz' * Gsz;
 inv_Q = inv(Q);
 
 % Inverse Compositional Algorithm
@@ -66,12 +68,13 @@ for f=1:n_iters
     catch ME
         break;
     end
-    [IWxpx, IWxpy, IWxpz] = cootes_taylor_features(IWxp);
+    [g2x, g2y, g2z, g2sz] = cootes_taylor_features(IWxp);
     
     % Error image
-    error_imgx = IWxpx - gx;
-    error_imgy = IWxpy - gy;
-    error_imgz = IWxpz - gz;
+    error_imgx = g2x - g1x;
+    error_imgy = g2y - g1y;
+    error_imgz = g2z - g1z;
+    error_imgsz = g2sz - g1sz;
     
     % Save current fit parameters --
     fitt(f).warp_p = warp_p;
@@ -85,27 +88,29 @@ for f=1:n_iters
     if (f == n_iters) break; end
     
     % Gradient descent parameter updates
-    delta_p = inv_Q * (Gx' * error_imgx(:) + Gy' * error_imgy(:) + Gz' * error_imgz(:));
+    delta_p = inv_Q * (Gx' * error_imgx(:) + Gy' * error_imgy(:) + Gz' * error_imgz(:) + Gsz' * error_imgsz(:));
     
     % Update warp parmaters
     warp_p = update_step_3d(warp_p, delta_p);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gx, gy, gz] = cootes_taylor_features(img)
+function [gx, gy, gz, sgz] = cootes_taylor_features(img)
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(img);
 
-% abs(nabla_Tx + 1i * nabla_Ty) == sqrt(nabla_Tx.^2 + nabla_Ty.^2)
-ab     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
-abc    = ab(:);
-abc(abc == 0) = NaN;
-m_ab   = nanmedian(abc);
+xyz     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
+xyzc    = xyz(:);
+xyzc(xyzc == 0) = NaN;
+m_xyz   = nanmedian(xyzc);
 
-if (m_ab == 0)
-    m_ab = nanmean(abc);
-end
+xy     = sqrt(nabla_Tx.^2 + nabla_Ty.^2);
+xyc    = xy(:);
+xyc(xyc == 0) = NaN;
+m_xy   = nanmedian(xyc);
 
-ab = ab + m_ab;
-gx = nabla_Tx ./ ab; 
-gy = nabla_Ty ./ ab;
-gz = nabla_Tz ./ ab;
+xyz = xyz + m_xyz;
+xy  = xy + m_xy;
+gx  = nabla_Tx ./ xy; 
+gy  = nabla_Ty ./ xy;
+gz  = nabla_Tz ./ xyz;
+sgz = sqrt(1 - gz .^ 2);
