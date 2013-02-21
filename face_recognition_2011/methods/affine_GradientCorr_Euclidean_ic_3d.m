@@ -52,10 +52,7 @@ df_g1_denom = sqrt(g1x2 + g1y2 + g1z2) .^ 3;
 
 % Prevent division by zero by adding the median
 % Take the median ignoring the dead voxels
-m_ab = df_g1_denom(:);
-m_ab(m_ab == 0) = NaN;
-m_ab = nanmedian(m_ab);
-df_g1_denom = df_g1_denom + m_ab;
+df_g1_denom = median_adjusted(df_g1_denom);
 
 dF_g1x = (g1y2 + g1z2) ./ df_g1_denom;
 dF_g1y = (g1x2 + g1z2) ./ df_g1_denom;
@@ -147,16 +144,9 @@ end
 function [gx, gy, gz] = median_adjusted_gradient(img)
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(img);
 
-ab     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
-abc    = ab(:);
-abc(abc == 0) = NaN;
-m_ab   = nanmedian(abc);
+ab = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
+ab = median_adjusted(ab);
 
-if (m_ab == 0)
-    m_ab = nanmean(abc(:));
-end
-
-ab = ab + m_ab;
 gx = nabla_Tx ./ ab; 
 gy = nabla_Ty ./ ab;
 gz = nabla_Tz ./ ab;

@@ -98,18 +98,12 @@ end
 function [gx, gy, gz, sgz] = median_adjusted_gradient(img)
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(img);
 
-xyz     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
-xyzc    = xyz(:);
-xyzc(xyzc == 0) = NaN;
-m_xyz   = nanmedian(xyzc);
+xyz = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
+xyz = median_adjusted(xyz);
 
-xy     = sqrt(nabla_Tx.^2 + nabla_Ty.^2);
-xyc    = xy(:);
-xyc(xyc == 0) = NaN;
-m_xy   = nanmedian(xyc);
+xy = sqrt(nabla_Tx.^2 + nabla_Ty.^2);
+xy = median_adjusted(xy);
 
-xyz = xyz + m_xyz;
-xy  = xy + m_xy;
 gx  = nabla_Tx ./ xy; 
 gy  = nabla_Ty ./ xy;
 gz  = nabla_Tz ./ xyz;
