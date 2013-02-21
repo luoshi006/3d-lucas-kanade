@@ -35,31 +35,33 @@ if nargin<4 error('Not enough input arguments'); end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Filter with Gaussian kernel
-img = smooth_img(img);
-tmplt = smooth_img(tmplt);
+% img = smooth_img(img);
+% tmplt = smooth_img(tmplt);
 
 % 3) Evaluate gradient of T
+% Need both tilde_g1 and g1
 [g1x, g1y, g1z] = gradient(tmplt);
+[tilde_g1x, tilde_g1y, tilde_g1z] = median_adjusted_gradient(tmplt);
 
 % Calculate df(g1,x[0]) / dg1,x[0]
 g1x2 = g1x .^ 2;
 g1y2 = g1y .^ 2;
 g1z2 = g1z .^ 2;
 
-g1_norm = sqrt(g1x2 + g1y2 + g1z2);
-df_g1_denom = g1_norm .^ 3;
+df_g1_denom = sqrt(g1x2 + g1y2 + g1z2) .^ 3;
 
-m_ab = g1_norm(:);
+% Prevent division by zero by adding the median
+% Take the median ignoring the dead voxels
+m_ab = df_g1_denom(:);
 m_ab(m_ab == 0) = NaN;
 m_ab = nanmedian(m_ab);
-g1_norm = g1_norm + m_ab;
 df_g1_denom = df_g1_denom + m_ab;
 
 dF_g1x = (g1y2 + g1z2) ./ df_g1_denom;
 dF_g1y = (g1x2 + g1z2) ./ df_g1_denom;
 dF_g1z = (g1x2 + g1y2) ./ df_g1_denom;
 
-G1 = (g1x + g1y + g1z) ./ g1_norm;
+G1 = tilde_g1x + tilde_g1y + tilde_g1z;
 G1 = G1(:);
 
 % Calculate dg1,x[0]/dp
@@ -79,14 +81,14 @@ dg1z_dp = image_jacobian_3d(g1zx, g1zy, g1zz, dW_dp, N_p);
 dF_g1x = repmat(dF_g1x(:), 1, N_p);
 dF_g1y = repmat(dF_g1y(:), 1, N_p);
 dF_g1z = repmat(dF_g1z(:), 1, N_p);
-nabla_g1x = dF_g1x .* dg1x_dp;
-nabla_g1y = dF_g1y .* dg1y_dp;
-nabla_g1z = dF_g1z .* dg1z_dp;
+Jx = dF_g1x .* dg1x_dp;
+Jy = dF_g1y .* dg1y_dp;
+Jz = dF_g1z .* dg1z_dp;
 
-J = nabla_g1x + nabla_g1y + nabla_g1z;
+J = Jx + Jy + Jz;
 
 % Hessian and its inverse
-H = nabla_g1x' * nabla_g1x + nabla_g1y' * nabla_g1y + nabla_g1z' * nabla_g1z;
+H = Jx' * Jx + Jy' * Jy + Jz' * Jz;
 invH = inv(H);
 
 % Inverse Compositional Algorithm  -------------------------------
@@ -97,13 +99,8 @@ for f=1:n_iters
     % -- Save current fit parameters --
     fitt(f).warp_p = warp_p;
     
-    [g2x, g2y, g2z] = gradient(IWxp);
-    g2_norm = sqrt(g2x .^ 2 + g2y .^ 2 + g2z .^ 2);
-    m_ab = g2_norm(:);
-    m_ab(m_ab == 0) = NaN;
-    m_ab = nanmedian(m_ab);
-    g2_norm = g2_norm + m_ab;
-    G2 = (g2x + g2y + g2z) ./ g2_norm;
+    [tilde_g2x, tilde_g2y, tilde_g2z] = median_adjusted_gradient(IWxp);
+    G2 = tilde_g2x + tilde_g2y + tilde_g2z;
     G2 = G2(:);
     
     % -- Show fitting? --
@@ -114,15 +111,15 @@ for f=1:n_iters
     % -- Really iteration 1 is the zeroth, ignore final computation --
     if (f == n_iters) break; end
     
-    Gw      = J' * G1;
-%     wPgw    = Gw' * invH * Gw;
-    Gr      = J' * G2;
-%     rPgr    = Gr' * invH * Gr;
-%     rPgw    = Gr' * invH * Gw;
+    Gw = J' * G1;
+%   wPgw    = Gw' * invH * Gw;
+    Gr = J' * G2;
+%   rPgr    = Gr' * invH * Gr;
+%   rPgw    = Gr' * invH * Gw;
 %     
-%     lambda1 = sqrt(wPgw / rPgr);
-%     lambda2 = (rPgw - dot(G2, G1)) / rPgr;
-%     lambda  = max(lambda1, lambda2);
+%   lambda1 = sqrt(wPgw / rPgr);
+%   lambda2 = (rPgw - dot(G2, G1)) / rPgr;
+%   lambda  = max(lambda1, lambda2);
     
     num    = norm(G1)^2 - Gw' * invH * Gw;
     den    = dot(G2, G1) - Gr' * invH * Gw;
@@ -134,12 +131,32 @@ for f=1:n_iters
     end
     
     % Error
-    imerror = lambda * G2 - G1;
-    Ge      = J' * imerror;
-    
+    imerrorx = lambda * tilde_g2x(:) - tilde_g1x(:);
+    imerrory = lambda * tilde_g2y(:) - tilde_g1y(:);
+    imerrorz = lambda * tilde_g2z(:) - tilde_g1z(:);
+    Ge       = Jx' * imerrorx + Jy' * imerrory + Jz' * imerrorz;
+
     % Gradient descent parameter updates
     delta_p = invH * Ge;
     
     % Update warp parmaters
     warp_p = update_step_3d(warp_p, delta_p);
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [gx, gy, gz] = median_adjusted_gradient(img)
+[nabla_Tx, nabla_Ty, nabla_Tz] = gradient(img);
+
+ab     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
+abc    = ab(:);
+abc(abc == 0) = NaN;
+m_ab   = nanmedian(abc);
+
+if (m_ab == 0)
+    m_ab = nanmean(abc(:));
+end
+
+ab = ab + m_ab;
+gx = nabla_Tx ./ ab; 
+gy = nabla_Ty ./ ab;
+gz = nabla_Tz ./ ab;
