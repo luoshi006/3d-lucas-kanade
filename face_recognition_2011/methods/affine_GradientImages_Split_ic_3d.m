@@ -38,7 +38,7 @@ if nargin<4 error('Not enough input arguments'); end
 % tmplt = smooth_img(tmplt);
 
 % Cootes-Taylor feature extraction from template
-[g1x, g1y, g1z, g1sz] = cootes_taylor_features(tmplt);
+[g1x, g1y, g1z, g1sz] = median_adjusted_gradient(tmplt);
 
 [nabla_Txx, nabla_Txy, nabla_Txz] = gradient(g1x);
 [nabla_Tyx, nabla_Tyy, nabla_Tyz] = gradient(g1y);
@@ -68,7 +68,7 @@ for f=1:n_iters
     catch ME
         break;
     end
-    [g2x, g2y, g2z, g2sz] = cootes_taylor_features(IWxp);
+    [g2x, g2y, g2z, g2sz] = median_adjusted_gradient(IWxp);
     
     % Error image
     error_imgx = g2x - g1x;
@@ -95,7 +95,7 @@ for f=1:n_iters
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gx, gy, gz, sgz] = cootes_taylor_features(img)
+function [gx, gy, gz, sgz] = median_adjusted_gradient(img)
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(img);
 
 xyz     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
