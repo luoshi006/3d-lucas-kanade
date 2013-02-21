@@ -56,7 +56,9 @@ df_g1_denom = df_g1_denom + m_ab;
 dF_g1x = g1y2 ./ df_g1_denom;
 dF_g1y = g1x2 ./ df_g1_denom;
 
-G1 = (g1x + g1y) ./ g1_norm;
+tilde_g1x = g1x ./ g1_norm;
+tilde_g1y = g1y ./ g1_norm;
+G1 = tilde_g1x + tilde_g1y;
 G1 = G1(:);
 
 % Calculate dg1,x[0]/dp
@@ -71,13 +73,13 @@ dg1y_dp = image_jacobian(g1yx, g1yy, dW_dp, N_p);
 
 dF_g1x = repmat(dF_g1x(:), 1, N_p);
 dF_g1y = repmat(dF_g1y(:), 1, N_p);
-nabla_g1x = dF_g1x .* dg1x_dp;
-nabla_g1y = dF_g1y .* dg1y_dp;
+Jx = dF_g1x .* dg1x_dp;
+Jy = dF_g1y .* dg1y_dp;
 
-J = nabla_g1x + nabla_g1y;
+J = Jx + Jy;
 
 % Hessian and its inverse
-H = nabla_g1x' * nabla_g1x + nabla_g1y' * nabla_g1y;
+H = Jx' * Jx + Jy' * Jy;
 invH = inv(H);
 
 % Inverse Compositional Algorithm  -------------------------------
@@ -91,7 +93,9 @@ for f=1:n_iters
     [g2x, g2y] = gradient(IWxp);
     g2_norm = abs(g2x + 1i*g2y);
     g2_norm = g2_norm + median(g2_norm(:));
-    G2 = (g2x + g2y) ./ g2_norm;
+    tilde_g2x = g2x ./ g2_norm;
+    tilde_g2y = g2y ./ g2_norm;
+    G2 = tilde_g2x + tilde_g2y;
     G2 = G2(:);
     
     % -- Show fitting? --
@@ -103,14 +107,14 @@ for f=1:n_iters
     if (f == n_iters) break; end
     
     Gw      = J' * G1;
-%     wPgw    = Gw' * invH * Gw;
+%   wPgw    = Gw' * invH * Gw;
     Gr      = J' * G2;
-%     rPgr    = Gr' * invH * Gr;
-%     rPgw    = Gr' * invH * Gw;
+%   rPgr    = Gr' * invH * Gr;
+%   rPgw    = Gr' * invH * Gw;
 %     
-%     lambda1 = sqrt(wPgw / rPgr);
-%     lambda2 = (rPgw - dot(G2, G1)) / rPgr;
-%     lambda  = max(lambda1, lambda2);
+%   lambda1 = sqrt(wPgw / rPgr);
+%   lambda2 = (rPgw - dot(G2, G1)) / rPgr;
+%   lambda  = max(lambda1, lambda2);
     
     num    = norm(G1)^2 - Gw' * invH * Gw;
     den    = dot(G2, G1) - Gr' * invH * Gw;
@@ -122,8 +126,9 @@ for f=1:n_iters
     end
     
     % Error
-    imerror = lambda * G2 - G1;
-    Ge      = J' * imerror;
+    imerrorx = lambda * tilde_g2x(:) - tilde_g1x(:);
+    imerrory = lambda * tilde_g2y(:) - tilde_g1y(:);
+    Ge      = Jx' * imerrorx + Jy' * imerrory;
     
     % Gradient descent parameter updates
     delta_p = invH * Ge;
