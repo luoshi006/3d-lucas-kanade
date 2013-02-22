@@ -11,13 +11,15 @@ function run_affine_3d(data_name)
 if nargin<1 error('Not enough input arguments'); end
 
 % List of algorithms to run
-alg_list = {'affine_GradientCorr_Euclidean_Split_ic_3d'};
+alg_list = get_all_files('methods', 'affine(_[\w]+)?_ic([_A-Za-z]+)?_3d\.(p|m)');
+alg_list = cellfun(@(x) x(1:length(x)-2), alg_list, 'UniformOutput', false);
 % alg_list = {'affine_ECC_ic_3d'};
 
 % Test parameters
-verbose = 1;					% Show fitting?
-n_iters = 15;					% Number of gradient descent iterations
-n_tests = 1;					% Number of convergence tests
+verbose = 0;					% Show fitting?
+smoothing = 0;
+n_iters = 30;					% Number of gradient descent iterations
+n_tests = 10;					% Number of convergence tests
 n_freq_tests = 30;				% Number of frequency of convergence tests
 max_spatial_error = 1;			% Max location error for deciding convergence
 
@@ -58,7 +60,7 @@ for i=1:length(img_pix_sig)
 					 ', Image: ', num2str(image_pixel_sigma), ...
 					 ', Template: ', num2str(tmplt_pixel_sigma)]);
 			
-				results = test_affine_3d(tdata, pt_offset, alg_list, n_iters, n_tests, n_freq_tests, spatial_sigma, image_pixel_sigma, tmplt_pixel_sigma, max_spatial_error, verbose);
+				results = test_affine_3d(tdata, pt_offset, alg_list, n_iters, n_tests, n_freq_tests, spatial_sigma, image_pixel_sigma, tmplt_pixel_sigma, max_spatial_error, verbose, smoothing);
 			
 			% Just frequency of convergence
 			else
@@ -66,7 +68,7 @@ for i=1:length(img_pix_sig)
 					 ', Image: ', num2str(image_pixel_sigma), ...
 					 ', Template: ', num2str(tmplt_pixel_sigma)]);
 			
-				results = test_affine_3d(tdata, pt_offset, alg_list, n_iters, 0, n_freq_tests, spatial_sigma, image_pixel_sigma, tmplt_pixel_sigma, max_spatial_error, verbose);
+				results = test_affine_3d(tdata, pt_offset, alg_list, n_iters, 0, n_freq_tests, spatial_sigma, image_pixel_sigma, tmplt_pixel_sigma, max_spatial_error, verbose, smoothing);
 			end
 			
 			% Save results

@@ -1,4 +1,4 @@
-function results = test_affine_3d(tdata, pt_offsets, alg_list, n_iters, n_tests, n_freq_tests, spatial_sigma, image_pixel_sigma, tmplt_pixel_sigma, max_spatial_error, verbose)
+function results = test_affine_3d(tdata, pt_offsets, alg_list, n_iters, n_tests, n_freq_tests, spatial_sigma, image_pixel_sigma, tmplt_pixel_sigma, max_spatial_error, verbose, smoothing)
 % TEST_AFFINE - Test affine algorithms
 %
 % See also: run_affine
@@ -143,7 +143,7 @@ while go
 	% Run each algorithm
 	for l=1:length(alg_list)
         fitp = [];
-		string = ['tic; fitp = ', alg_list{l}, '(noisy_img, tmplt_img, p_init, n_iters, verbose); t = toc;'];
+		string = ['tic; fitp = ', alg_list{l}, '(noisy_img, tmplt_img, p_init, n_iters, verbose, smoothing); t = toc;'];
 		eval(string);
 		
 		% Evaluate point spatial error for each iteration for convergence tests

@@ -1,4 +1,4 @@
-function fitt = affine_GradientImages_Split_ic_3d(img, tmplt, p_init, n_iters, verbose)
+function fitt = affine_GradientImages_Split_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing)
 % affine_GradientImages_ic - Affine image alignment using the features proposed by Cootes-Taylor [1] and the
 % inverse-compositional algorithm of Baker-Matthews [2]
 %
@@ -34,8 +34,10 @@ if nargin<4 error('Not enough input arguments'); end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Filter with Gaussian kernel
-% img = smooth_img(img);
-% tmplt = smooth_img(tmplt);
+if (smoothing)
+    img = smooth_img(img);
+    tmplt = smooth_img(tmplt);
+end
 
 % Cootes-Taylor feature extraction from template
 [g1x, g1y, g1z, g1sz] = median_adjusted_gradient(tmplt);

@@ -1,4 +1,4 @@
-function fitt = affine_GradientCorr_Euclidean_ic_3d(img, tmplt, p_init, n_iters, verbose)
+function fitt = affine_GradientCorr_Euclidean_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing)
 % affine_ECC_ic - Affine image alignment using the enhanced correlation coefficient [1] and the
 % inverse-compositional algorithm of Baker-Matthews [2]
 %
@@ -35,8 +35,10 @@ if nargin<4 error('Not enough input arguments'); end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Filter with Gaussian kernel
-% img = smooth_img(img);
-% tmplt = smooth_img(tmplt);
+if (smoothing)
+    img = smooth_img(img);
+    tmplt = smooth_img(tmplt);
+end
 
 % 3) Evaluate gradient of T
 % Need both tilde_g1 and g1

@@ -1,4 +1,4 @@
-function fitt = affine_ic_3d(img, tmplt, p_init, n_iters, verbose, ~)
+function fitt = affine_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing)
 % AFFINE_IC - Affine image alignment using inverse-compositional algorithm
 %   FIT = AFFINE_IC(IMG, TMPLT, P_INIT, N_ITERS, VERBOSE)
 %   Align the template image TMPLT to an example image IMG using an
@@ -29,8 +29,10 @@ end
 
 % Pre-computable things ---------------------------------------------------
 % Filter with Gaussian kernel
-img = smooth_img(img);
-tmplt = smooth_img(tmplt);
+if (smoothing)
+    img = smooth_img(img);
+    tmplt = smooth_img(tmplt);
+end
 
 % 3) Evaluate gradient of T
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(tmplt);

@@ -1,4 +1,4 @@
-function fitt = affine_ic_irls_3d(img, tmplt, p_init, n_iters, verbose, var)
+function fitt = affine_ic_irls_3d(img, tmplt, p_init, n_iters, verbose, smoothing, var)
 % AFFINE_IC_IRLS - Affine image alignment using inverse-compositional 
 % iteratively reweighted least squares algorithm
 %   FIT = AFFINE_IC_IRLS(IMG, TMPLT, P_INIT, N_ITERS, VAR, VERBOSE)
@@ -33,8 +33,10 @@ if nargin<4 error('Not enough input arguments'); end
 % Pre-computable things ---------------------------------------------------
 var.perc_out = 0.4;
 % Filter with Gaussian kernel
-img = smooth_img(img);
-tmplt = smooth_img(tmplt);
+if (smoothing)
+    img = smooth_img(img);
+    tmplt = smooth_img(tmplt);
+end
 
 % 3) Evaluate gradient of T
 [nabla_Tx, nabla_Ty, nabla_Tz] = gradient(tmplt);
