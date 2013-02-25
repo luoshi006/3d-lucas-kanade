@@ -14,12 +14,10 @@ clear('inp');
 
 %% Create gif
 
-colormap(gray(256));
-
 [h, w, d] = size(img);
 im = zeros(h, w, 1, d);
 
 for k=1:size(img, 3)
-  im(:,:,1,k) = (img(:,:,k) / max(max(max(img(:,:,k))))) * 256;
+  im(:, :, 1, k) = mat2gray(img(:, :, k));
 end
-imwrite(im, filename, 'DelayTime', arg.DelayTime, 'LoopCount', arg.LoopCount)
+imwrite(uint8(round(im*256)), filename, 'DelayTime', arg.DelayTime, 'LoopCount', arg.LoopCount)
