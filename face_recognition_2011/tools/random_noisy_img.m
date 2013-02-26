@@ -1,9 +1,10 @@
-function [noisy_img, params] = random_noisy_img(tmplt, noise)
+function [noisy_img, params] = random_noisy_img(tmplt, noise, scale)
 
 scaled = double(noise) * (max(max(max(tmplt))) - 1);
-scaled(scaled == 0) = NaN;
+scaled = imresize(scaled, scale, 'bilinear');
 ang = rand(1) * pi;
 scaled = imrotate(scaled, ang);
+scaled(scaled == 0) = NaN;
 
 noisy_img = tmplt;     
 
