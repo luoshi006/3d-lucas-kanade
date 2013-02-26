@@ -1,4 +1,4 @@
-function run_affine_3d(data_name)
+function results = run_affine_3d(data_name)
 % Run an affine perturbation test
 %
 % e.g. run_affine_3d('takeo');
@@ -35,8 +35,8 @@ num_of_imgs_per_subj = 1;%size(example_imgs, 3)/num_of_subjs;
 results = zeros(num_of_subjs, num_of_imgs_per_subj, length(all_spc_sig), length(alg_list));
 
 % Run tests
-for subj = 1:1:num_of_subjs    
-    for i = 1:1:num_of_imgs_per_subj
+for subj = 1:num_of_subjs
+    for i = 1:num_of_imgs_per_subj
         % template img
         tdata.img2 = tdata.tmplt_img;
         
@@ -62,8 +62,6 @@ for subj = 1:1:num_of_subjs
                 n_converge = getfield(res, {1}, alg_list{l}, {1}, 'n_converge');
                 results(subj, i, s, l) = n_converge;
             end
-           
-        end
-        
+        end 
     end
 end
