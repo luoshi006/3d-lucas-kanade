@@ -36,6 +36,7 @@ results = zeros(num_of_scales, length(all_spc_sig), length(alg_list));
 
 % Run tests
 for iter = 1:num_of_scales
+    fprintf('Iteration %d \n', iter);
     % template img
     tdata.img2 = tdata.tmplt_img;
 
@@ -64,3 +65,5 @@ for iter = 1:num_of_scales
         end
     end
 end
+
+save results.mat results;
