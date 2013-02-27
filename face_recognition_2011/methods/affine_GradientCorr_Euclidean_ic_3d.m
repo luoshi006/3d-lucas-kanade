@@ -125,7 +125,7 @@ for f=1:n_iters
     lambda = num / den;
 
     if den < 0 
-        fprintf('The denominator is diverging: %f', den);
+        fprintf('The denominator is diverging: %f \n', den);
         break; 
     end
     

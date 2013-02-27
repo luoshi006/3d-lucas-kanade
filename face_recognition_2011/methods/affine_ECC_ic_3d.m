@@ -88,7 +88,10 @@ for f=1:n_iters
     den    = (dot(tmplt(:), IWxp(:)) - Gt' * i_C * Gw);
     lambda = num / den;
     
-    if den < 0 break; end
+    if den < 0 
+        fprintf('The denominator is diverging: %f \n', den);
+        break; 
+    end
     
     % Error
     imerror = lambda * tmplt - IWxp;
