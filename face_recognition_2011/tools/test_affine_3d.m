@@ -97,7 +97,7 @@ img = tdata.img1;
 % Run
 while offset_idx <= n_freq_tests
     if verbose == 1
-    disp(['Divergence Test: ', num2str(offset_idx)]);
+        disp(['Divergence Test: ', num2str(offset_idx)]);
     end
     % Test points: apply current point offset to target points
     test_pts = target_affine + reshape(pt_offsets1(offset_idx,:), 3, 4);
@@ -111,11 +111,10 @@ while offset_idx <= n_freq_tests
     % Run each algorithm
     
     for l=1:length(alg_list)
-         if verbose == 1
-            string = [alg_list{l} ' fitting...'];
+        if verbose == 1
+        	string = [alg_list{l} ' fitting...'];
             disp(string)
-         end
-        save matfileint.mat p_init;
+        end
         string = ['fitt = ', alg_list{l}, '(img, tmplt, p_init, n_iters, verbose, smoothing);'];
         eval(string);
         rms_pt_error = ComputePointError(test_pts, template_affine, fitt(end).warp_p);

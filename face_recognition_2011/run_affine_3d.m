@@ -18,8 +18,8 @@ alg_list = cellfun(@(x) x(1:length(x)-2), alg_list, 'UniformOutput', false);
 verbose = 0;					% Show fitting?
 smoothing = 0;                  % Apply Gaussian smoothing?
 scale = 0.1;                    % % increase in size increase every iteration
-n_iters = 10;					% Number of gradient descent iterations
-n_freq_tests = 1;				% Number of frequency of convergence tests
+n_iters = 30;					% Number of gradient descent iterations
+n_freq_tests = 100;				% Number of frequency of convergence tests
 max_spatial_error = 1.4;        % Max location error for deciding convergence
 
 all_spc_sig = (1:10);		    % All spatial sigmas
@@ -42,7 +42,7 @@ for iter = 1:num_of_scales
     data.tmplt = tdata.tmplt;
 
     s = 1 + ((iter - 1) * scale);
-    [data.img1, params] = random_noisy_img(tdata.tmplt_img, tdata.noise_img, s);
+    [data.img1, params] = random_noisy_img(tdata, s);
     create_gif(data.img1, sprintf('%dx%dx%d - %f (%.2f).gif', params.w,  params.h,  params.d,  params.ang, s));
 
     % Matrix S for Gabor-Fourier method, thanx to Peter Kovesi's Gabor Filters, http://www.csse.uwa.edu.au/~pk/

@@ -4,7 +4,7 @@
 
 clear; clc;
 n_freq_tests = 1;
-load results10.mat; %load results
+load resultsall.mat; %load results
 results = mean(results, 1);
 results = squeeze(results);
 
