@@ -43,7 +43,7 @@ for iter = 1:num_of_scales
 
     s = 1 + ((iter - 1) * scale);
     [data.img1, params] = random_noisy_img(tdata, s);
-    create_gif(data.img1, sprintf('%dx%dx%d - %f (%.2f).gif', params.w,  params.h,  params.d,  params.ang, s));
+    create_gif(data.img1, sprintf('%dx%dx%d - (%f,%f,%f) (%.2f).gif', params.w,  params.h,  params.d,  params.angx, params.angy, params.angz, s));
 
     % Matrix S for Gabor-Fourier method, thanx to Peter Kovesi's Gabor Filters, http://www.csse.uwa.edu.au/~pk/
 %         temp = ones(tdata.tmplt(4)-tdata.tmplt(2)+1, tdata.tmplt(3)-tdata.tmplt(1)+1);

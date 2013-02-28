@@ -6,8 +6,12 @@ box = tdata.tmplt;
 
 scaled = double(noise) * (max(max(max(tmplt))) - 1);
 scaled = imresize(scaled, scale, 'bilinear');
-ang = rand(1) * pi;
-scaled = imrotate(scaled, ang);
+angx = rand(1) * 2 * pi;
+angy = rand(1) * 2 * pi;
+angz = rand(1) * 2 * pi;
+scaled = imrotate(permute(scaled, [1 2 3]), rad2deg(angx));
+scaled = imrotate(permute(scaled, [1 3 2]), rad2deg(angy));
+scaled = imrotate(permute(scaled, [2 3 1]), rad2deg(angz));
 scaled(scaled == 0) = NaN;
 
 noisy_img = tmplt;     
@@ -29,4 +33,6 @@ noisy_img(isnan(noisy_img)) = tmplt(isnan(noisy_img));
 params.w = w;
 params.h = h;
 params.d = d;
-params.ang = ang;
+params.angx = angx;
+params.angy = angy;
+params.angz = angz;
