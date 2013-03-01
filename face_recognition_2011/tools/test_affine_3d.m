@@ -46,7 +46,7 @@ template_nz = maxZ - minZ;
 template_pts = [1           1           1;           % Bottom Rectangle
 				1           template_ny 1;
 				template_nx template_ny 1;
-				template_nx 1           1
+				template_nx 1           1;
                 1           1           template_nz; % Top Rectangle
 				1           template_ny template_nz;
 				template_nx template_ny template_nz;

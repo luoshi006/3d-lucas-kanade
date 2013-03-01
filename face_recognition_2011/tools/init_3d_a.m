@@ -22,8 +22,8 @@ end
 warp_p = p_init;
 
 % Template size
-w = size(tmplt, 1);
-h = size(tmplt, 2);
+h = size(tmplt, 1);
+w = size(tmplt, 2);
 d = size(tmplt, 3);
 
 % Template verticies, cube           

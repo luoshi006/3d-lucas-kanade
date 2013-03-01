@@ -16,8 +16,7 @@ colormap(gray(256));
 
 % Input image
 subplot(1,2,1);
-patch(isosurface(img,0.99));
-axis('square');
+PATCH_3Darray(img);
 title('Image');
 axis off
 
@@ -34,8 +33,7 @@ hold off
 
 % Template image
 subplot(1,2,2);
-patch(isosurface(tmplt, 0.99));
-axis('square');
+PATCH_3Darray(tmplt);
 title('Template');
 axis off
 
