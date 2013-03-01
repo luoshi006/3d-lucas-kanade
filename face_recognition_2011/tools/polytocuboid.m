@@ -29,12 +29,11 @@ xy = [xy; ones(1, size(xy, 2))];
 % Transform into source
 uv = M * xy;
 
-% Remove homogeneous
-uv = uv(1:3,:)';
-
 % Sample
-wimg = interp3(img, uv(:,1), uv(:,2), uv(:,3));
-wimg = reshape(wimg, [maxv(1) maxv(2) maxv(3)]);
+xi = reshape(uv(1, :), [maxv(2) maxv(1) maxv(3)]);
+yi = reshape(uv(2, :), [maxv(2) maxv(1) maxv(3)]);
+zi = reshape(uv(3, :), [maxv(2) maxv(1) maxv(3)]);
+wimg = interp3(img, xi, yi, zi);
 
 % Check for NaN background pixels - replace them with a background of 0
 idx = find(isnan(wimg));
