@@ -16,7 +16,7 @@ colormap(gray(256));
 
 % Input image
 subplot(1,2,1);
-PATCH_3Darray(img);
+imshow(img(:, :, 1), [])
 title('Image');
 axis off
 
@@ -33,7 +33,7 @@ hold off
 
 % Template image
 subplot(1,2,2);
-PATCH_3Darray(tmplt);
+imshow(tmplt(:, :, 1), [])
 title('Template');
 axis off
 
