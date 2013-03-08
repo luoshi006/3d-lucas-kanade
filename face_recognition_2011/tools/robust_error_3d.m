@@ -8,7 +8,8 @@ function weight = robust_error_3d(error_img, perc_out)
 % Ralph Gross
 % Carnegie Mellon University, Pittsburgh
 
-[~, ind]       = sort(abs(error_img(:)));
+no_nans        = error_img(~isnan(error_img));
+[~, ind]       = sort(abs(no_nans(:)));
 selInd         = ind(1:round((1 - perc_out) * length(ind)));
 weight         = zeros(size(error_img));
 weight(selInd) = 1;

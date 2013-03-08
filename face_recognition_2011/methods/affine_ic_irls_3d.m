@@ -70,8 +70,8 @@ for f=1:n_iters
   % Compute robust error funtion (ignore 0 voxels as they are clean cuts
   % in the data and thus don't represent correlation)
   IWxp_ignore = IWxp;
-  IWxp_ignore(IWxp_ignore == 0) = NaN;
   error_img_ignore = IWxp_ignore - tmplt;
+  error_img_ignore(error_img_ignore == 0) = NaN;
   weight = robust_error_3d(error_img_ignore, var.perc_out);
 
   % 6) Compute robust Hessian
