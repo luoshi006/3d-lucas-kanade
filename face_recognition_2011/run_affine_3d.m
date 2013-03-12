@@ -20,13 +20,27 @@ smoothing = 0;                  % Apply Gaussian smoothing?
 n_iters = 30;					% Number of gradient descent iterations
 n_freq_tests = 100;				% Number of frequency of convergence tests
 max_spatial_error = 1.4;        % Max location error for deciding convergence
-
 all_spc_sig = (1:10);		    % All spatial sigmas
+% Gabor parameters
+num_of_scales = 32;
+num_ele = 4;
+num_azi = 6;
+minWaveLength = 3;
+mult = 2;
+sigmaOnf = 0.65;
+dPhiSigma = 1.5;
+dThetaSigma = 1.5;
 
 % Should not need to modify anything below --------------------------------
 
 % tdata - the image and initial template
 tdata = load(['data/', data_name]);
+
+% Calculate gabor filter
+temp = ones(tdata.tmplt(5) - tdata.tmplt(2), tdata.tmplt(4) - tdata.tmplt(1), tdata.tmplt(6) - tdata.tmplt(3));
+S = gaborconvolve_3d(temp, num_of_scales, num_ele, num_azi, minWaveLength, mult, sigmaOnf, dThetaSigma, dPhiSigma);
+save S.mat S;
+clear temp;
 
 % pt_offset - precomputed random point offsets
 pt_offset = load('data/affine_pt_offset_3d');
