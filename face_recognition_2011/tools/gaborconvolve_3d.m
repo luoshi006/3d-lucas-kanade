@@ -92,15 +92,13 @@
 % May   2001 - Original version
 % April 2010 - Reworked to tidy things up. Return of bandpass images added.
 
-function [S, EO] = gaborconvolve_3d(im, nscale, norient, minWaveLength, mult, sigmaOnf)
+function [S, EO] = gaborconvolve_3d(im, nscale, num_ele, num_azi, minWaveLength, mult, sigmaOnf, dThetaSigma, dPhiSigma)
 
-num_ele = 4;
-num_azi = 6;
-dPhiSigma = 1.5;
-dThetaSigma = 1.5;
+% Pre compute data
 thetaSigma = pi / num_ele / dThetaSigma;
 phiSigma = (2 * pi) / num_azi / dPhiSigma;
-EO = cell(nscale, num_ele * num_azi);          % Pre-allocate cell array
+
+EO = cell(nscale, num_ele * num_azi);          
 imagefft = fftn(im);
 
 S = 0;
