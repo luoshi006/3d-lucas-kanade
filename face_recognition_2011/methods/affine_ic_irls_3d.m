@@ -1,4 +1,4 @@
-function fitt = affine_ic_irls_3d(img, tmplt, p_init, n_iters, verbose, smoothing, var)
+function fitt = affine_ic_irls_3d(img, tmplt, p_init, n_iters, verbose, smoothing, varargin)
 % AFFINE_IC_IRLS - Affine image alignment using inverse-compositional 
 % iteratively reweighted least squares algorithm
 %   FIT = AFFINE_IC_IRLS(IMG, TMPLT, P_INIT, N_ITERS, VAR, VERBOSE)
@@ -31,7 +31,7 @@ if nargin<4 error('Not enough input arguments'); end
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
 
 % Pre-computable things ---------------------------------------------------
-var.perc_out = 0.4;
+perc_out = 0.4;
 % Filter with Gaussian kernel
 if (smoothing)
     img = smooth_img(img);
@@ -72,7 +72,7 @@ for f=1:n_iters
   IWxp_ignore = IWxp;
   error_img_ignore = IWxp_ignore - tmplt;
   error_img_ignore(error_img_ignore == 0) = NaN;
-  weight = robust_error_3d(error_img_ignore, var.perc_out);
+  weight = robust_error_3d(error_img_ignore, perc_out);
 
   % 6) Compute robust Hessian
   H     = hessian_weight_3d(VT_dW_dp, weight, N_p, w);

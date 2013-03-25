@@ -1,4 +1,4 @@
-function fitt  = affine_ECC_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing)
+function fitt  = affine_ECC_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing, varargin)
 % affine_ECC_ic - Affine image alignment using the enhanced correlation coefficient [1] and the
 % inverse-compositional algorithm of Baker-Matthews [2]
 %

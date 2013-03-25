@@ -1,4 +1,4 @@
-function fitt = affine_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing)
+function fitt = affine_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing, varargin)
 % AFFINE_IC - Affine image alignment using inverse-compositional algorithm
 %   FIT = AFFINE_IC(IMG, TMPLT, P_INIT, N_ITERS, VERBOSE)
 %   Align the template image TMPLT to an example image IMG using an

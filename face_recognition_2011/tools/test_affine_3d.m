@@ -1,4 +1,4 @@
-function results = test_affine_3d(tdata, pt_offsets, alg_list, n_iters, n_freq_tests, spatial_sigma, max_spatial_error, verbose, smoothing)
+function results = test_affine_3d(tdata, pt_offsets, alg_list, n_iters, n_freq_tests, spatial_sigma, max_spatial_error, verbose, smoothing, S)
 % my_test_affine - Test affine algorithms: a short version of the
 % test_affine function written by Iain Matthews, Simon Baker, Carnegie Mellon University, Pittsburgh
 %
@@ -115,7 +115,7 @@ while offset_idx <= n_freq_tests
         	string = [alg_list{l} ' fitting...'];
             disp(string)
         end
-        string = ['fitt = ', alg_list{l}, '(img, tmplt, p_init, n_iters, verbose, smoothing);'];
+        string = ['fitt = ', alg_list{l}, '(img, tmplt, p_init, n_iters, verbose, smoothing, S);'];
         eval(string);
         rms_pt_error = ComputePointError(test_pts, template_affine, fitt(end).warp_p);
         fitt = [];

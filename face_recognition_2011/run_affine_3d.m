@@ -13,6 +13,7 @@ if nargin<1 error('Not enough input arguments'); end
 % List of algorithms to run
 alg_list = get_all_files('methods', 'affine(_[\w]+)?_ic([_A-Za-z]+)?_3d\.(p|m)');
 alg_list = cellfun(@(x) x(1:length(x)-2), alg_list, 'UniformOutput', false);
+alg_list = {'affine_GaborFourier_ic_3d'};
 
 % Test parameters
 verbose = 1;					% Show fitting?
@@ -54,9 +55,10 @@ data.tmplt = tdata.tmplt;
 
 for s=1:length(all_spc_sig)
     spatial_sigma = all_spc_sig(s);
-
-    res = test_affine_3d(data, pt_offset, alg_list, n_iters, n_freq_tests, spatial_sigma, max_spatial_error, verbose, smoothing);
+    fprintf('Spatial Sigma %d\n', spatial_sigma);
+    
+    res = test_affine_3d(data, pt_offset, alg_list, n_iters, n_freq_tests, spatial_sigma, max_spatial_error, verbose, smoothing, S);
     res = cellfun(@(x) struct2cell(x), struct2cell(res), 'UniformOutput', false);
     results(1, s, :) = cell2mat(cellfun(@(x) x{1}, res, 'UniformOutput', false));
 end
-save(sprintf('results%d.mat', iter), 'results');
+save(sprintf('results.mat'), 'results');

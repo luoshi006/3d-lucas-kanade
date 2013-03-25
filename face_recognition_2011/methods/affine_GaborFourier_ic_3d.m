@@ -1,4 +1,4 @@
-function fitt = affine_GaborFourier_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing)
+function fitt = affine_GaborFourier_ic_3d(img, tmplt, p_init, n_iters, verbose, smoothing, varargin)
 % affine_GaborFourier_ic - Affine image alignment using the Gabor-Fourier framework [1] and the
 % inverse-compositional algorithm of Baker-Matthews [2]
 %
@@ -27,11 +27,9 @@ function fitt = affine_GaborFourier_ic_3d(img, tmplt, p_init, n_iters, verbose, 
 % Intelligent Behaviour Understanding Group (IBUG), Department of Computing, Imperial College London
 % $ Version: 1.0, 03/01/2012 $
 
-if nargin<5 verbose = 0; end
-
 % Common initialisation
 [img, warp_p, tmplt_pts, w, h, d, N_p, verb_info] = init_3d_a(tmplt, img, p_init, verbose);
-load S.mat;
+S = varargin{1};
 SS = repmat(S, 1, N_p);
 
 % Gradient of template
