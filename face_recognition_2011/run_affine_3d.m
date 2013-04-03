@@ -13,7 +13,6 @@ if nargin<1 error('Not enough input arguments'); end
 % List of algorithms to run
 alg_list = get_all_files('methods', 'affine(_[\w]+)?_ic([_A-Za-z]+)?_3d\.(p|m)');
 alg_list = cellfun(@(x) x(1:length(x)-2), alg_list, 'UniformOutput', false);
-alg_list = {'affine_GaborFourier_ic_3d'};
 
 % Test parameters
 verbose = 1;					% Show fitting?
@@ -36,9 +35,10 @@ dThetaSigma = 1.5;
 
 % tdata - the image and initial template
 tdata = load(['data/', data_name]);
+data.tmplt = tdata.tmplt1;
 
 % Calculate gabor filter
-temp = ones(tdata.tmplt(5) - tdata.tmplt(2), tdata.tmplt(4) - tdata.tmplt(1), tdata.tmplt(6) - tdata.tmplt(3));
+temp = ones(data.tmplt(5) - data.tmplt(2), data.tmplt(4) - data.tmplt(1), data.tmplt(6) - data.tmplt(3));
 S = gaborconvolve_3d(temp, num_of_scales, num_ele, num_azi, minWaveLength, mult, sigmaOnf, dThetaSigma, dPhiSigma);
 save S.mat S;
 clear temp;
@@ -51,7 +51,6 @@ results = zeros(1, length(all_spc_sig), length(alg_list));
 % template img
 data.img1 = tdata.tmplt_img;
 data.img2 = tdata.tmplt_img;
-data.tmplt = tdata.tmplt;
 
 for s=1:length(all_spc_sig)
     spatial_sigma = all_spc_sig(s);
