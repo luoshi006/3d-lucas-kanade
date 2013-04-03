@@ -68,7 +68,6 @@ dF_g1z = (g1x2 + g1y2) ./ df_g1z_denom;
 dF_g1sz = -((g1z .* ((g1y2 + g1z2) ./ df_g1sz_denom1) .^ (3/2)) ./ df_g1sz_denom2);
 
 G1 = tilde_g1x + tilde_g1y + tilde_g1z + tilde_g1sz;
-G1 = G1(:);
 
 % Calculate dg1,x[0]/dp
 [g1xx, g1xy, g1xz] = gradient(g1x);
@@ -93,8 +92,6 @@ Jy = dF_g1y .* dg1y_dp;
 Jz = dF_g1z .* dg1z_dp;
 Jsz = dF_g1sz .* dg1z_dp;
 
-J = Jx + Jy + Jz + Jsz;
-
 % Hessian and its inverse
 H = Jx' * Jx + Jy' * Jy + Jz' * Jz + Jsz' * Jsz;
 invH = inv(H);
@@ -107,10 +104,6 @@ for f=1:n_iters
     % -- Save current fit parameters --
     fitt(f).warp_p = warp_p;
     
-    [tilde_g2x, tilde_g2y, tilde_g2z, tilde_g2sz] = median_adjusted_gradient(IWxp);
-    G2 = tilde_g2x + tilde_g2y + tilde_g2z + tilde_g2sz;
-    G2 = G2(:);
-    
     % -- Show fitting? --
     if verbose
         verb_plot_3d_a(verb_info, warp_p, tmplt_pts);
@@ -119,34 +112,27 @@ for f=1:n_iters
     % -- Really iteration 1 is the zeroth, ignore final computation --
     if (f == n_iters) break; end
     
-    Gw = J' * G1;
-%   wPgw    = Gw' * invH * Gw;
-    Gr = J' * G2;
-%   rPgr    = Gr' * invH * Gr;
-%   rPgw    = Gr' * invH * Gw;
-%     
-%   lambda1 = sqrt(wPgw / rPgr);
-%   lambda2 = (rPgw - dot(G2, G1)) / rPgr;
-%   lambda  = max(lambda1, lambda2);
+    [g2x, g2y, g2z, g2sz] = median_adjusted_gradient(IWxp);
     
-    num    = norm(G1)^2 - Gw' * invH * Gw;
-    den    = dot(G2, G1) - Gr' * invH * Gw;
-    lambda = num / den;
-
-    if den < 0 
-        fprintf('%s - The denominator is diverging: %f \n', mfilename, den);
-        break; 
+    % Error image
+    error_imgx = g2x - g1x;
+    error_imgy = g2y - g1y;
+    error_imgz = g2z - g1z;
+    error_imgsz = g2sz - g1sz;
+    
+    % Save current fit parameters --
+    fitt(f).warp_p = warp_p;
+    
+    % Show fitting? --
+    if verbose
+        verb_plot_3d_a(verb_info, warp_p, tmplt_pts);
     end
     
-    % Error
-    imerrorx  = lambda * tilde_g2x(:) - tilde_g1x(:);
-    imerrory  = lambda * tilde_g2y(:) - tilde_g1y(:);
-    imerrorz  = lambda * tilde_g2z(:) - tilde_g1z(:);
-    imerrorsz = lambda * tilde_g2sz(:) - tilde_g1sz(:);
-    Ge        = Jx' * imerrorx + Jy' * imerrory + Jz' * imerrorz + Jsz' * imerrorsz;
-
+    % Really iteration 1 is the zeroth, ignore final computation --
+    if (f == n_iters) break; end
+    
     % Gradient descent parameter updates
-    delta_p = invH * Ge;
+    delta_p = invH * (Jx' * error_imgx(:) + Jy' * error_imgy(:) + Jz' * error_imgz(:) + Jsz' * error_imgsz(:));
     
     % Update warp parmaters
     warp_p = update_step_3d(warp_p, delta_p);
