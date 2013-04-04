@@ -67,8 +67,6 @@ dF_g1y = g1x2 ./ df_g1xy_denom;
 dF_g1z = (g1x2 + g1y2) ./ df_g1z_denom;
 dF_g1sz = -((g1z .* ((g1y2 + g1z2) ./ df_g1sz_denom1) .^ (3/2)) ./ df_g1sz_denom2);
 
-G1 = tilde_g1x + tilde_g1y + tilde_g1z + tilde_g1sz;
-
 % Calculate dg1,x[0]/dp
 [g1xx, g1xy, g1xz] = gradient(g1x);
 [g1yx, g1yy, g1yz] = gradient(g1y);
@@ -112,13 +110,13 @@ for f=1:n_iters
     % -- Really iteration 1 is the zeroth, ignore final computation --
     if (f == n_iters) break; end
     
-    [g2x, g2y, g2z, g2sz] = median_adjusted_gradient(IWxp);
+    [tilde_g2x, tilde_g2y, tilde_g2z, tilde_g2sz] = median_adjusted_gradient(IWxp);
     
     % Error image
-    error_imgx = g2x - g1x;
-    error_imgy = g2y - g1y;
-    error_imgz = g2z - g1z;
-    error_imgsz = g2sz - g1sz;
+    error_imgx = tilde_g2x - tilde_g1x;
+    error_imgy = tilde_g2y - tilde_g1y;
+    error_imgz = tilde_g2z - tilde_g1z;
+    error_imgsz = tilde_g2sz - tilde_g1sz;
     
     % Save current fit parameters --
     fitt(f).warp_p = warp_p;
