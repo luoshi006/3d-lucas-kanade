@@ -92,13 +92,13 @@
 % May   2001 - Original version
 % April 2010 - Reworked to tidy things up. Return of bandpass images added.
 
-function [S, EO] = gaborconvolve_3d(im, nscale, num_ele, num_azi, minWaveLength, mult, sigmaOnf, dThetaSigma, dPhiSigma)
+function [EO, BP, S] = gaborconvolve_3d(im, nscale, num_theta, num_phi, minWaveLength, mult, sigmaOnf, dThetaSigma, dPhiSigma)
 
 % Pre compute data
-thetaSigma = pi / num_ele / dThetaSigma;
-phiSigma = (2 * pi) / num_azi / dPhiSigma;
+thetaSigma = pi / num_theta / dThetaSigma;
+phiSigma = (2 * pi) / num_phi / dPhiSigma;
 
-EO = cell(nscale, num_ele * num_azi);          
+EO = cell(nscale, num_theta, num_phi);          
 imagefft = fftn(im);
 
 S = 0;
@@ -166,6 +166,7 @@ clear phi; clear theta;    % save a little memory
 lp = lowpassfilter_3d([height, width, depth], .45, 15);   % Radius .45, 'sharpness' 15
 
 logGabor = cell(1, nscale);
+BP = cell(nscale,1);
 
 for s = 1:nscale
     wavelength = minWaveLength * mult^(s - 1);
@@ -173,11 +174,13 @@ for s = 1:nscale
     logGabor{s} = exp((-(log(radius / fo)) .^ 2) / (2 * log(sigmaOnf)^2));  
     logGabor{s} = logGabor{s} .* lp;        % Apply low-pass filter
     logGabor{s}(1, 1) = 0;                  % Set the value at the 0 frequency point of the filter back to zero (undo the radius fudge).      
+    
+    BP{s} = ifft2(imagefft .* logGabor{s});
 end
 
 % The main loop - For each orientation.
-for e = 1:num_ele
-    eleAngle = (e - 1) * pi / num_ele;     % Calculate filter angle.
+for e = 1:num_theta
+    eleAngle = (e - 1) * pi / num_theta;     % Calculate filter angle.
 
     % Pre-compute filter data specific to this orientation
     % For each point in the filter matrix calculate the angular distance from the
@@ -188,8 +191,8 @@ for e = 1:num_ele
     dtc = costheta * cos(eleAngle) + sintheta * sin(eleAngle);     % Difference in cosine.
     dtheta = abs(atan2(dts, dtc));                                 % Absolute angular distance.
     
-    for a = 1:num_azi  
-        aziAngle = a * 2 * pi / num_azi;
+    for a = 1:num_phi  
+        aziAngle = a * 2 * pi / num_phi;
         dps = sinphi * cos(aziAngle) - cosphi * sin(aziAngle);     % Difference in sine.
         dpc = cosphi * cos(aziAngle) + sinphi * sin(aziAngle);     % Difference in cosine.
         dphi = abs(atan2(dps, dpc));                               % Absolute angular distance.
@@ -202,7 +205,7 @@ for e = 1:num_ele
         for s = 1:nscale,
             filter = fftshift(logGabor{s} .* spread);
             S = S + filter .* conj(filter);
-            EO{s, (e - 1) * num_azi + a} = ifft2(imagefft .* filter);
+            EO{s, e, a} = ifft2(imagefft .* filter);
 
             % Finally calculate Wavelength of next filter and process the next scale
             wavelength = wavelength * mult;       
