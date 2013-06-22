@@ -1,4 +1,4 @@
-function fitt = affine_GradientCorr_ic(img, tmplt, p_init, n_iters, verbose)
+function fitt = affine_GradientCorr_ic(img, tmplt, p_init, n_iters, verbose, S)
 % affine_GradientCorr_ic - Affine image alignment using the proposed maximization of gradient correlation [1] 
 %
 %   FIT = affine_GradientCorr_ic(IMG, TMPLT, P_INIT, N_ITERS, VERBOSE)
@@ -34,9 +34,9 @@ end
 
 init_a;
 
-H     = fspecial('gaussian', [5 5], 2.0);
-img   = imfilter(img, H, 'replicate');
-tmplt = imfilter(tmplt, H, 'replicate');
+% H     = fspecial('gaussian', [5 5], 2.0);
+% img   = imfilter(img, H, 'replicate');
+% tmplt = imfilter(tmplt, H, 'replicate');
 
 % Gradient of template
 [tx, ty] = gradient(tmplt);

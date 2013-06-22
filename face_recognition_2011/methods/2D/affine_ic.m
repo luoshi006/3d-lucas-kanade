@@ -24,9 +24,9 @@ if nargin<4 error('Not enough input arguments'); end
 init_a;
 
 % Pre-computable things ---------------------------------------------------
-H  = fspecial('gaussian', [5 5], 2.0);
-img = imfilter(img, H, 'replicate'); 
-tmplt = imfilter(tmplt, H, 'replicate');
+% H  = fspecial('gaussian', [5 5], 2.0);
+% img = imfilter(img, H, 'replicate'); 
+% tmplt = imfilter(tmplt, H, 'replicate');
 
 % 3) Evaluate gradient of T
 [nabla_Tx nabla_Ty] = gradient(tmplt);

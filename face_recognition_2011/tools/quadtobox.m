@@ -22,7 +22,7 @@ minv = min(dst');
 maxv = max(dst');
 
 % Get all points in destination to sample
-[xg yg] = meshgrid(1:maxv(1), 1:maxv(2));
+[xg yg] = meshgrid(0:maxv(1) -1, 0:maxv(2)-1);
 xy = [reshape(xg, prod(size(xg)), 1)'; reshape(yg, prod(size(yg)), 1)'];
 xy = [xy; ones(1,size(xy,2))];
 
@@ -35,7 +35,7 @@ uv = uv(1:2,:)';
 % Sample
 xi = reshape(uv(:,1),maxv(2),maxv(1));
 yi = reshape(uv(:,2),maxv(2),maxv(1));
-wimg = interp2(img, xi, yi, f_type);
+wimg = interp2(img, xi, yi);
 
 % Check for NaN background pixels - replace them with a background of 0
 idx = find(isnan(wimg));

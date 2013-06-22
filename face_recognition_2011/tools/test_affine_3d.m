@@ -43,19 +43,19 @@ template_ny = maxY - minY;
 template_nz = maxZ - minZ;
 
 % Template corner points (unperturbed, rectangle)
-template_pts = [1           1           1;           % Bottom Rectangle
-				1           template_ny 1;
-				template_nx template_ny 1;
-				template_nx 1           1;
-                1           1           template_nz; % Top Rectangle
-				1           template_ny template_nz;
+template_pts = [0           0           0;           % Bottom Rectangle
+				0           template_ny 0;
+				template_nx template_ny 0;
+				template_nx 0           0;
+                0           0           template_nz; % Top Rectangle
+				0           template_ny template_nz;
 				template_nx template_ny template_nz;
-				template_nx 1           template_nz]';
+				template_nx 0           template_nz]';
 
 % Template affine warp control points
-template_affine = [1               1               1;             % Bottom Triangle
-				   template_nx     1               1;
-				   template_nx / 2 template_ny     1;
+template_affine = [0               0               0;             % Bottom Triangle
+				   template_nx     0               0;
+				   template_nx / 2 template_ny     0;
                    template_nx / 2 template_ny / 2 template_nz]'; % Tip of Tetrahedron Triangle
 
 % Initial warp parameters. Unperturbed translation
@@ -72,7 +72,7 @@ p_init(3, 4) = p_init(3, 4) + 0.5;
 % Pick a total of n_freq_tests point offsets from pt_offsets randomly
 ind         = round(size(pt_offsets, 1)*rand(n_freq_tests, 1));
 ind(ind==0) =1;
-pt_offsets1 = pt_offsets(ind, :);
+pt_offsets1 = pt_offsets;
 
 % Scale point offsets to have required sigma
 pt_offsets1 = pt_offsets1 * spatial_sigma;
@@ -102,8 +102,10 @@ while offset_idx <= n_freq_tests
     % Test points: apply current point offset to target points
     test_pts = target_affine + reshape(pt_offsets1(offset_idx,:), 3, 4);
     % Solve for affine warp
-    M = [template_affine; ones(1,size(template_affine,2))]' \ [test_pts; ones(1,size(test_pts,2))]';
-    M = M';
+    M1 = [template_affine; ones(1,size(template_affine,2))]';
+    M2 = [test_pts; ones(1,size(test_pts,2))]';
+     
+    M = (M1 \ M2)';
     % Warp original image to get test "template" image
     tmplt = polytocuboid(tdata.img2, template_pts, M);
     % Initial error in affine points. This is not quite sqrt(mean(pt_offset(offset_idx,:) .^ 2)) due to p_init

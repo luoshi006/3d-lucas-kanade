@@ -60,23 +60,9 @@ function f = lowpassfilter_3d(sze, cutoff, n)
     % Set up X and Y matrices with ranges normalised to +/- 0.5
     % The following code adjusts things appropriately for odd and even values
     % of rows and columns.
-    if mod(cols, 2)
-        xrange = (-(cols - 1) / 2:(cols - 1) / 2) / (cols - 1);
-    else
-        xrange = (-cols / 2:(cols / 2 - 1)) / cols;	
-    end
-
-    if mod(rows, 2)
-        yrange = (-(rows - 1) / 2:(rows - 1) / 2) / (rows - 1);
-    else
-        yrange = (-rows / 2:(rows / 2 - 1)) / rows;	
-    end
-    
-    if mod(deps, 2)
-        zrange = (-(deps - 1) / 2:(deps - 1) / 2) / (deps - 1);
-    else
-        zrange = (-deps / 2:(deps / 2 - 1)) / deps;	
-    end
+    xrange = linspace(-0.5, 0.5, cols);
+    yrange = linspace(-0.5, 0.5, rows);
+    zrange = linspace(-0.5, 0.5, deps);
     
     [x,y,z] = meshgrid(xrange, yrange, zrange);
     % A matrix with every pixel = radius relative to centre.

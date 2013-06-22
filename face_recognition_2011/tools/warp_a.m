@@ -20,4 +20,4 @@ M(1,1) = M(1,1) + 1;
 M(2,2) = M(2,2) + 1;
 
 % Use bilinear filtering to warp image back to template
-wimg = quadtobox(img, dst, M, 'bilinear');
+wimg = quadtobox(img, dst, M, 'nearest');

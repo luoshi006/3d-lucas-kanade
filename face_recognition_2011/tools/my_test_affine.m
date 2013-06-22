@@ -1,4 +1,4 @@
-function results = my_test_affine(tdata, pt_offsets, alg_list, n_iters, n_freq_tests, spatial_sigma, max_spatial_error, verbose)
+function results = my_test_affine(tdata, pt_offsets, alg_list, n_iters, n_freq_tests, spatial_sigma, max_spatial_error, verbose, S)
 % my_test_affine - Test affine algorithms: a short version of the
 % test_affine function written by Iain Matthews, Simon Baker, Carnegie Mellon University, Pittsburgh
 %
@@ -37,18 +37,18 @@ target_affine = [tdata.tmplt(1), tdata.tmplt(2);
     tdata.tmplt(1) + ((tdata.tmplt(3) - tdata.tmplt(1)) / 2) - 0.5, tdata.tmplt(4)]';
 
 % Template image dimensions
-template_nx = tdata.tmplt(3) - tdata.tmplt(1) + 1;
-template_ny = tdata.tmplt(4) - tdata.tmplt(2) + 1;
+template_nx = tdata.tmplt(3) - tdata.tmplt(1);
+template_ny = tdata.tmplt(4) - tdata.tmplt(2);
 
 % Template corner points (unperturbed, rectangle)
-template_pts = [1, 1;
-    1, template_ny;
+template_pts = [0, 0;
+    0, template_ny;
     template_nx, template_ny;
-    template_nx, 1]';
+    template_nx, 0]';
 
 % Template affine warp control points
-template_affine = [1, 1;
-    template_nx, 1;
+template_affine = [0, 0;
+    template_nx, 0;
     template_nx / 2, template_ny]';
 
 % Initial warp parameters. Unperturbed translation
@@ -63,9 +63,9 @@ p_init(1, 3) = p_init(1, 3) + 0.5;
 p_init(2, 3) = p_init(2, 3) + 0.5;
 
 % Pick a total of n_freq_tests point offsets from pt_offsets randomly
-ind         = round(size(pt_offsets, 1)*rand(n_freq_tests, 1));
-ind(ind==0) =1;
-pt_offsets1 = pt_offsets(ind, :);
+% ind         = round(size(pt_offsets, 1)*rand(n_freq_tests, 1));
+% ind(ind==0) =1;
+pt_offsets1 = pt_offsets;
 
 % Scale point offsets to have required sigma
 pt_offsets1 = pt_offsets1 * spatial_sigma;
@@ -95,8 +95,9 @@ while offset_idx <= n_freq_tests
     % Test points: apply current point offset to target points
     test_pts = target_affine + reshape(pt_offsets1(offset_idx,:), 2, 3);
     % Solve for affine warp
-    M = [template_affine; ones(1,size(template_affine,2))]' \ [test_pts; ones(1,size(test_pts,2))]';
-    M = M';
+    M1 = [template_affine; ones(1,size(template_affine,2))]';
+    M2 = [test_pts; ones(1,size(test_pts,2))]';
+    M = (M1 \ M2)';
     % Warp original image to get test "template" image
     tmplt = quadtobox(tdata.img2, template_pts, M, 'bilinear');
     % Initial error in affine points. This is not quite sqrt(mean(pt_offset(offset_idx,:) .^ 2)) due to p_init
@@ -108,10 +109,12 @@ while offset_idx <= n_freq_tests
             string = [alg_list{l} ' fitting...'];
             disp(string)
          end
-        save matfileint.mat p_init;
-        string = ['fitt = ', alg_list{l}, '(img, tmplt, p_init, n_iters, verbose);'];
+        verbose = 0;
+	save matfileint.mat p_init;
+        string = ['fitt = ', alg_list{l}, '(img, tmplt, p_init, n_iters, verbose, S);'];
         eval(string);
-        rms_pt_error = ComputePointError(test_pts, template_affine, fitt(end).warp_p);
+        verbose = 1;
+	rms_pt_error = ComputePointError(test_pts, template_affine, fitt(end).warp_p);
         fitt = [];
         % Save spatial errors
         results = setfield(results, {1}, alg_list{l}, {offset_idx}, 'rms_pt_error', rms_pt_error);     

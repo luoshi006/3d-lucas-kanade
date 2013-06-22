@@ -33,7 +33,7 @@ uv = M * xy;
 xi = reshape(uv(1, :), [maxv(2) maxv(1) maxv(3)]);
 yi = reshape(uv(2, :), [maxv(2) maxv(1) maxv(3)]);
 zi = reshape(uv(3, :), [maxv(2) maxv(1) maxv(3)]);
-wimg = interp3(img, xi, yi, zi);
+wimg = interp3(img, xi, yi, zi, 'nearest');
 
 % Check for NaN background pixels - replace them with a background of 0
 idx = find(isnan(wimg));

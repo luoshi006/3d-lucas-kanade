@@ -112,23 +112,9 @@ end
 % Set up X and Y matrices with ranges normalised to +/- 0.5
 % The following code adjusts things appropriately for odd and even values
 % of rows and columns.
-if mod(width, 2)
-    xrange = (-(width - 1) / 2:(width - 1) / 2) / (width - 1);
-else
-    xrange = (-width / 2:(width / 2 - 1)) / width;	
-end
-
-if mod(height, 2)
-    yrange = (-(height - 1) / 2:(height - 1) / 2) / (height - 1);
-else
-    yrange = (-height / 2:(height / 2 - 1)) / height;	
-end
-
-if mod(depth, 2)
-    zrange = (-(depth - 1) / 2:(depth - 1) / 2) / (depth - 1);
-else
-    zrange = (-depth / 2:(depth / 2 - 1)) / depth;	
-end
+xrange = linspace(-0.5, 0.5, width);
+yrange = linspace(-0.5, 0.5, height);
+zrange = linspace(-0.5, 0.5, depth);
 
 [x,y,z] = meshgrid(xrange, yrange, zrange);
 

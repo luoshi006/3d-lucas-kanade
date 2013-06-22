@@ -37,9 +37,6 @@ if verbose
     img1 = img; tmplt1 = tmplt;
 end
 init_a;
-H  = fspecial('gaussian', [5 5], 2.0); 
-img = imfilter(img, H, 'replicate');
-tmplt = imfilter(tmplt, H, 'replicate');
 tmplt = tmplt - mean(tmplt(:));
 n_tmplt = norm(tmplt(:));
 tmplt = tmplt/n_tmplt;

@@ -1,4 +1,4 @@
-function fit = affine_GaborFourier_ic(img, tmplt, p_init, n_iters, verbose)
+function fit = affine_GaborFourier_ic(img, tmplt, p_init, n_iters, verbose, S)
 % affine_GaborFourier_ic - Affine image alignment using the Gabor-Fourier framework [1] and the
 % inverse-compositional algorithm of Baker-Matthews [2]
 %
@@ -35,11 +35,10 @@ if verbose
    img1 = img; tmplt1 = tmplt;     
 end
 init_a;
-load S.mat;
 SS = repmat(S, 1, N_p);
 
 % Gradient of template
-[nabla_Tx nabla_Ty] = gradient(tmplt);
+[nabla_Tx, nabla_Ty] = gradient(tmplt);
 
 % Jacobian 
 dW_dp = jacobian_a(w, h);

@@ -13,6 +13,7 @@ if nargin<1 error('Not enough input arguments'); end
 % List of algorithms to run
 alg_list = get_all_files('methods', 'affine(_[\w]+)?_ic([_A-Za-z]+)?_3d\.(p|m)');
 alg_list = cellfun(@(x) x(1:length(x)-2), alg_list, 'UniformOutput', false);
+alg_list = {'affine_ic_3d'};
 
 % Test parameters
 verbose = 1;					% Show fitting?
@@ -39,7 +40,7 @@ data.tmplt = tdata.tmplt1;
 
 % Calculate gabor filter
 temp = ones(data.tmplt(5) - data.tmplt(2), data.tmplt(4) - data.tmplt(1), data.tmplt(6) - data.tmplt(3));
-S = gaborconvolve_3d(temp, num_of_scales, num_ele, num_azi, minWaveLength, mult, sigmaOnf, dThetaSigma, dPhiSigma);
+[~, ~, S] = gaborconvolve_3d(temp, num_of_scales, num_ele, num_azi, minWaveLength, mult, sigmaOnf, dThetaSigma, dPhiSigma);
 save S.mat S;
 clear temp;
 
