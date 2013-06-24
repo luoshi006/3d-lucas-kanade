@@ -88,11 +88,11 @@ for f=1:n_iters
     if den<0 break; end
     
     % Error
-    imerror = lambda * tmplt - IWxp;
+    imerror = lambda * IWxp - tmplt;
     Ge = G' * imerror(:);
     
     % Gradient descent parameter updates
-    delta_p = -i_C * Ge;
+    delta_p = i_C * Ge;
     
     % Update warp parmaters
     warp_p = update_step(warp_p, delta_p);
