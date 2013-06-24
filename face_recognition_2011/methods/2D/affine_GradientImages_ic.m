@@ -35,9 +35,9 @@ if verbose
    img1 = img; tmplt1 = tmplt;     
 end
 init_a;
-H  = fspecial('gaussian', [5 5], 2.0);
-img = imfilter(img, H, 'replicate');
-tmplt = imfilter(tmplt, H, 'replicate');
+% H  = fspecial('gaussian', [5 5], 2.0);
+% img = imfilter(img, H, 'replicate');
+% tmplt = imfilter(tmplt, H, 'replicate');
 
 % Cootes-Taylor feature extraction from template
 [nabla_Tx nabla_Ty] = gradient(tmplt);
