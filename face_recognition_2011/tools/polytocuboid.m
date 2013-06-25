@@ -20,7 +20,7 @@ if nargin<3 error('Invalid args'); end
 maxv = max(dst');
 
 % Get all points in destination to sample
-[xg, yg, zg] = meshgrid(1:maxv(1), 1:maxv(2), 1:maxv(3));
+[xg, yg, zg] = meshgrid(0:maxv(1)-1, 0:maxv(2)-1, 0:maxv(3)-1);
 xy = [xg(:)'; ...
       yg(:)'; ...
       zg(:)'];
@@ -33,7 +33,7 @@ uv = M * xy;
 xi = reshape(uv(1, :), [maxv(2) maxv(1) maxv(3)]);
 yi = reshape(uv(2, :), [maxv(2) maxv(1) maxv(3)]);
 zi = reshape(uv(3, :), [maxv(2) maxv(1) maxv(3)]);
-wimg = interp3(img, xi, yi, zi, 'nearest');
+wimg = interp3(img, xi, yi, zi);
 
 % Check for NaN background pixels - replace them with a background of 0
 idx = find(isnan(wimg));
