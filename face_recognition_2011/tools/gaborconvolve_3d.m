@@ -126,7 +126,7 @@ phi = acos(z ./ (radius + m_ab));
 radius = ifftshift(radius);       % Quadrant shift radius and theta so that filters
 theta  = ifftshift(theta);
 phi  = ifftshift(phi);        % are constructed with 0 frequency at the corners.
-radius(1, 1, :) = 1;                 % Get rid of the 0 radius value at the 0
+radius(1, 1, 1) = 1;                 % Get rid of the 0 radius value at the 0
                                   % frequency point (now at top-left corner)
                                   % so that taking the log of the radius will 
                                   % not cause trouble.
@@ -159,7 +159,7 @@ for s = 1:nscale
     fo = 1.0 / wavelength;                  % Centre frequency of filter.
     logGabor{s} = exp((-(log(radius / fo)) .^ 2) / (2 * log(sigmaOnf)^2));  
     logGabor{s} = logGabor{s} .* lp;        % Apply low-pass filter
-    logGabor{s}(1, 1, :) = 0;                  % Set the value at the 0 frequency point of the filter back to zero (undo the radius fudge).      
+    logGabor{s}(1, 1, 1) = 0;               % Set the value at the 0 frequency point of the filter back to zero (undo the radius fudge).      
     
     BP{s} = ifft2(imagefft .* logGabor{s});
 end
