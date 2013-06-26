@@ -93,7 +93,7 @@
 % April 2010 - Reworked to tidy things up. Return of bandpass images added.
 
 function [EO, BP, S] = gaborconvolve(im, nscale, norient, minWaveLength, mult, ...
-			    sigmaOnf, Lnorm, feedback)
+			    sigmaOnf, dThetaOnSigma, Lnorm, feedback)
     
      S = 0;
     if ndims(im) == 3
@@ -188,11 +188,10 @@ function [EO, BP, S] = gaborconvolve(im, nscale, norient, minWaveLength, mult, .
         dc = costheta * cos(angl) + sintheta * sin(angl);     % Difference in cosine.
         dtheta = abs(atan2(ds,dc));                           % Absolute angular distance.
 
-        % Scale dtheta so that cosine spread function has the right wavelength and clamp to pi    
-        dtheta = min(dtheta*norient/2,pi);
-        % The spread function is cos(dtheta) between -pi and pi.  We add 1,
-        % and then divide by 2 so that the value ranges 0-1
-        spread = (cos(dtheta)+1)/2;                  
+        % Calculate the standard deviation of the angular Gaussian
+        % function used to construct filters in the freq. plane.
+        thetaSigma = pi/norient/dThetaOnSigma;  
+        spread = exp((-dtheta.^2) / (2 * thetaSigma^2));                   
         
         for s = 1:nscale,                    % For each scale.
             filter = logGabor{s} .* spread;  % Multiply by the angular spread to get the filter

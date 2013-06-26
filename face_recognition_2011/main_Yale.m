@@ -68,7 +68,7 @@ for subj = 1:1:num_of_subjs
         % Matrix S for Gabor-Fourier method, thanx to Peter Kovesi's Gabor Filters, http://www.csse.uwa.edu.au/~pk/
         temp = ones(tdata.tmplt(4)-tdata.tmplt(2), tdata.tmplt(3)-tdata.tmplt(1));
         num_of_scales = 32; num_of_or = 32;
-        [EO, BP, S] = gaborconvolve(temp, num_of_scales, num_of_or , 3, 2, 0.65);
+        [EO, BP, S] = gaborconvolve(temp, num_of_scales, num_of_or , 3, 2, 0.65, 1.3);
         save S.mat S;
               
         % Run tests
