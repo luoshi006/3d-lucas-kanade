@@ -47,7 +47,7 @@ tmpltx = nabla_Tx./ab; tmplty = nabla_Ty./ab;
 
 [nabla_Txx nabla_Txy] = gradient(tmpltx);
 [nabla_Tyx nabla_Tyy] = gradient(tmplty);
-nabla_Tyx = nabla_Txy;
+nabla_Txy = nabla_Tyx;
 
 % Jacobian
 dW_dp = jacobian_a(w, h);

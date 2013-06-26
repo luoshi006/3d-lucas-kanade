@@ -46,9 +46,9 @@ end
 [nabla_Tyx, nabla_Tyy, nabla_Tyz] = gradient(gy);
 [nabla_Tzx, nabla_Tzy, nabla_Tzz] = gradient(gz);
 % Approximates fully differentiable gradients
-nabla_Tyx = nabla_Txy;
-nabla_Tyz = nabla_Tzy;
+nabla_Txy = nabla_Tyx;
 nabla_Txz = nabla_Tzx;
+nabla_Tyz= nabla_Tzy;
 
 % Jacobian
 dW_dp = jacobian_3d_a(w, h, d);
@@ -100,12 +100,7 @@ function [gx, gy, gz] = cootes_taylor_features(img)
 % abs(nabla_Tx + 1i * nabla_Ty) == sqrt(nabla_Tx.^2 + nabla_Ty.^2)
 ab     = sqrt(nabla_Tx.^2 + nabla_Ty.^2 + nabla_Tz.^2);
 abc    = ab(:);
-abc(abc == 0) = NaN;
-m_ab   = nanmedian(abc);
-
-if (m_ab == 0)
-    m_ab = nanmean(abc);
-end
+m_ab   = median(abc);
 
 ab = ab + m_ab;
 gx = nabla_Tx ./ ab; 
