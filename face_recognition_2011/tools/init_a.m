@@ -23,7 +23,7 @@ h = size(tmplt, 1);
 w = size(tmplt, 2);
 
 % Template verticies, rectangular 0o[minX minY; minX maxY; maxX maxY; maxX minY]
-tmplt_pts = [1 1; 1 h; w h; w 1]';
+tmplt_pts = [0 0; 0 h; w h; w 0]';
 
 % Verbose display of fitting?
 if verbose
